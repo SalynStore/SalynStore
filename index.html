@@ -1,0 +1,2026 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salyn Store · Catálogo</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.1.0/tabler-icons.min.css">
+<style>
+/* ============================================================
+   1. CONFIGURACIÓN — edita aquí los colores y el número de WhatsApp
+   ============================================================ */
+:root{
+  --br: #7B3358;        /* color principal (marrón rosado) */
+  --br-soft: #EDB5CC;    /* color secundario (rosa suave) */
+  --br-pale: #FBE8F0;    /* fondo rosado pálido */
+  --bg-page: #FFF9FB;    /* fondo de la página */
+  --text-dark: #2C2C2C;
+  --text-gray: #6b6b6b;
+  --text-mute: #999;
+  --wa: #22c55e;
+  --wa-dark: #16a34a;
+  --border: #eee2e8;
+  --card-bg: #ffffff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body{
+  font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   2. ENCABEZADO
+   ============================================================ */
+.header{
+  max-width: 1100px; margin: 0 auto;
+  padding: 1.5rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.header-top{ display:flex; align-items:flex-start; justify-content:space-between; }
+.brand{
+  font-size: 26px; font-weight: 600; color: var(--br);
+  display:flex; align-items:center; gap:10px;
+}
+.brand i{ font-size: 24px; }
+.subtitle{ font-size: 14px; color: var(--text-gray); margin-top: 4px; }
+.accent-bar{ height: 3px; background: var(--br-soft); margin-top: 14px; border-radius: 2px; }
+
+.wish-chip{
+  font-size: 13px; color: var(--br); display:flex; align-items:center; gap:6px;
+  padding: 7px 14px; border: 1px solid var(--br-soft); border-radius: 100px;
+  background: var(--br-pale); white-space:nowrap;
+}
+
+/* ============================================================
+   3. BUSCADOR Y FILTROS
+   ============================================================ */
+.controls{ max-width: 1100px; margin: 0 auto; padding: 14px 1.25rem 0; }
+.search-wrap{ position: relative; margin-bottom: 12px; }
+.search-wrap i{
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  color: var(--text-mute); font-size: 17px; pointer-events:none;
+}
+.search-wrap input{
+  width: 100%; padding: 11px 14px 11px 40px; border-radius: 10px;
+  border: 1px solid var(--border); font-size: 14px; background: #fff;
+  outline: none;
+}
+.search-wrap input:focus{ border-color: var(--br-soft); box-shadow: 0 0 0 3px var(--br-pale); }
+
+.pills{ display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none; }
+.pills::-webkit-scrollbar{ display:none; }
+.pill{
+  padding:8px 16px; border-radius:100px; font-size:13px; cursor:pointer;
+  border:1px solid var(--border); background:#fff; color:var(--text-gray);
+  white-space:nowrap; transition: all .15s;
+}
+.pill:hover{ border-color:var(--br-soft); color:var(--text-dark); }
+.pill.active{
+  border:2px solid var(--br); color:var(--br); font-weight:600; background:var(--br-pale);
+}
+
+.result-count{ font-size: 12px; color: var(--text-mute); padding: 10px 1.25rem 0; max-width: 1100px; margin: 0 auto; }
+
+/* ============================================================
+   4. GRILLA DE PRODUCTOS
+   ============================================================ */
+.grid{
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px; padding: 14px 1.25rem 1.5rem;
+}
+.card{
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
+  overflow: hidden; display: flex; flex-direction: column;
+  transition: box-shadow .2s, transform .2s;
+}
+.card:hover{ box-shadow: 0 6px 18px rgba(123,51,88,.08); transform: translateY(-2px); }
+
+.card-img{
+  height: 160px; display:flex; align-items:center; justify-content:center;
+  position: relative; flex-shrink:0; overflow:hidden;
+}
+.card-img i{ font-size: 52px; }
+.card-img img{
+  width:100%; height:100%; object-fit:cover; display:block;
+}
+.tag{
+  position:absolute; top:10px; left:10px; font-size:11px; font-weight:600;
+  padding:4px 10px; border-radius:100px; background:#fff; color:var(--text-gray);
+  border:1px solid var(--border); display:flex; align-items:center; gap:4px;
+}
+.tag i{ font-size: 12px; }
+
+.card-body{ padding:14px; flex:1; display:flex; flex-direction:column; }
+.cat-label{ font-size:11px; font-weight:700; color:var(--br); text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px; }
+.prod-name{ font-size:14px; font-weight:600; line-height:1.35; margin-bottom:2px; }
+.prod-brand{ font-size:12px; color:var(--text-mute); margin-bottom:6px; }
+.prod-desc{ font-size:12px; color:var(--text-gray); line-height:1.55; flex:1; margin-bottom:12px; }
+
+.price-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.price{ font-size:19px; font-weight:700; color:var(--br); }
+.heart-btn{
+  background:var(--br-pale); border:1.5px solid var(--br-soft);
+  border-radius:8px; padding:7px 11px; cursor:pointer;
+  color:var(--br); font-size:15px; transition:all .15s;
+}
+.heart-btn:hover{ background:var(--br); color:#fff; border-color:var(--br); }
+.heart-btn.active{ background:var(--br); color:#fff; border-color:var(--br); }
+
+.whatsapp-btn{
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  width:100%; padding:10px; border-radius:9px; border:none;
+  background: var(--wa); color:#fff; font-size:13px; font-weight:600; cursor:pointer;
+}
+.whatsapp-btn:hover{ background: var(--wa-dark); }
+.whatsapp-btn:active{ transform: scale(.98); }
+.whatsapp-btn i{ font-size:17px; }
+
+/* colores por categoría */
+.bg-sk{ background:#FBEAF0; } .tx-sk{ color:#72243E; }
+.bg-mq{ background:#FAECE7; } .tx-mq{ color:#993C1D; }
+.bg-pe{ background:#EEEDFE; } .tx-pe{ color:#3C3489; }
+.bg-ma{ background:#E1F5EE; } .tx-ma{ color:#0F6E56; }
+.bg-cr{ background:#FAEEDA; } .tx-cr{ color:#854F0B; }
+.bg-pf{ background:#F4C0D1; } .tx-pf{ color:#72243E; }
+.bg-ac{ background:#FAEEDA; } .tx-ac{ color:#854F0B; }
+.bg-kt{ background:#E6F1FB; } .tx-kt{ color:#185FA5; }
+
+.empty-state{ text-align:center; padding:4rem 1rem; color:var(--text-mute); }
+.empty-state i{ font-size:42px; display:block; margin-bottom:14px; }
+.empty-state .title{ font-size:16px; font-weight:600; color:var(--text-dark); margin-bottom:4px; }
+.empty-state button{
+  margin-top:14px; padding:9px 18px; border-radius:8px; border:1px solid var(--border);
+  background:#fff; cursor:pointer; font-size:13px;
+}
+
+/* ============================================================
+   5. PIE DE PÁGINA
+   ============================================================ */
+.footer{
+  max-width: 1100px; margin: 0 auto; text-align:center;
+  padding: 2rem 1.25rem; border-top: 1px solid var(--border);
+}
+.footer p{ font-size:13px; color:var(--text-gray); margin-bottom:14px; }
+.footer-btn{
+  display:inline-flex; align-items:center; gap:8px; padding:13px 28px;
+  background: var(--wa); color:#fff; border:none; border-radius:100px;
+  font-size:14px; font-weight:600; cursor:pointer;
+}
+.footer-btn:hover{ background: var(--wa-dark); }
+.footer-btn i{ font-size:19px; }
+.footer-note{ font-size:12px; color:var(--text-mute); margin-top:12px; }
+
+/* ── CARRITO ─────────────────────────────────────── */
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:none}
+.cart-overlay.open{display:block}
+.cart-panel{
+  position:fixed;top:0;right:0;bottom:0;width:380px;max-width:100vw;
+  background:var(--card-bg);z-index:101;display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+  box-shadow:-6px 0 24px rgba(0,0,0,.14)
+}
+.cart-panel.open{transform:translateX(0)}
+.cart-phdr{
+  padding:18px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0
+}
+.cart-ptitle{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;color:var(--text-dark)}
+.cart-ptitle i{font-size:18px;color:var(--br)}
+.cart-pclose{
+  background:none;border:1px solid var(--border);border-radius:8px;
+  padding:6px 10px;cursor:pointer;color:var(--text-gray);font-size:16px
+}
+.cart-pclose:hover{border-color:var(--br);color:var(--br)}
+.cart-pbody{flex:1;overflow-y:auto;padding:12px 16px}
+.cart-empty-msg{text-align:center;padding:3rem 1rem;color:var(--text-mute)}
+.cart-empty-msg i{font-size:44px;display:block;margin-bottom:14px;color:var(--br-soft)}
+.cart-empty-msg p:first-of-type{font-size:15px;font-weight:600;color:var(--text-dark);margin-bottom:4px}
+.cart-pitem{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:14px 0;border-bottom:1px solid var(--border)
+}
+.cart-pitem-img{
+  width:52px;height:52px;border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:24px
+}
+.cart-pitem-info{flex:1;min-width:0}
+.cart-pitem-name{font-size:13px;font-weight:600;line-height:1.35;margin-bottom:2px}
+.cart-pitem-unit{font-size:12px;color:var(--text-mute)}
+.cart-qty-row{display:flex;align-items:center;gap:8px;margin-top:8px}
+.qty-btn{
+  width:28px;height:28px;border-radius:50%;border:1px solid var(--border);
+  background:none;cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center
+}
+.qty-btn:hover{border-color:var(--br);color:var(--br);background:var(--br-pale)}
+.qty-num{font-size:13px;font-weight:700;min-width:22px;text-align:center}
+.cart-pitem-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0}
+.cart-pitem-sub{font-size:14px;font-weight:700;color:var(--br)}
+.cart-remove{background:none;border:none;cursor:pointer;color:var(--text-mute);font-size:15px;padding:2px}
+.cart-remove:hover{color:#ef4444}
+.cart-pfoot{padding:16px 20px;border-top:1px solid var(--border);background:var(--card-bg);flex-shrink:0}
+.cart-count-line{font-size:12px;color:var(--text-mute);margin-bottom:12px}
+.cart-total-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 0;border-top:1px solid var(--border);margin-bottom:14px
+}
+.cart-total-lbl{font-size:15px;font-weight:700}
+.cart-total-amt{font-size:22px;font-weight:700;color:var(--br)}
+.cart-wa-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:13px;border-radius:10px;border:none;
+  background:var(--wa);color:#fff;font-size:14px;font-weight:700;
+  cursor:pointer;margin-bottom:8px
+}
+.cart-wa-btn:hover{background:var(--wa-dark)}
+.cart-wa-btn i{font-size:19px}
+.cart-clear-btn{
+  width:100%;padding:9px;border-radius:8px;border:1px solid var(--border);
+  background:none;color:var(--text-mute);font-size:12px;cursor:pointer
+}
+.cart-clear-btn:hover{border-color:#ef4444;color:#ef4444}
+.float-cart{
+  position:fixed;bottom:24px;right:24px;z-index:99;
+  background:var(--br);color:#fff;border:none;width:58px;height:58px;
+  border-radius:50%;cursor:pointer;display:none;align-items:center;
+  justify-content:center;font-size:22px;
+  box-shadow:0 4px 16px rgba(123,51,88,.4)
+}
+.float-cart.on{display:flex}
+.float-cart:hover{background:#5C2742}
+.float-badge{
+  position:absolute;top:-5px;right:-5px;background:#ef4444;color:#fff;
+  border-radius:50%;min-width:20px;height:20px;font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--card-bg);padding:0 3px
+}
+.cart-hdr-btn{
+  display:flex;align-items:center;gap:7px;padding:7px 14px;
+  border:1px solid var(--br-soft);border-radius:100px;
+  background:var(--br-pale);cursor:pointer;font-size:13px;
+  color:var(--br);font-weight:600;white-space:nowrap
+}
+.cart-hdr-btn:hover{background:var(--br);color:#fff}
+.cart-hdr-btn i{font-size:16px}
+.cart-hdr-num{
+  background:var(--br);color:#fff;border-radius:100px;
+  padding:1px 7px;font-size:11px;font-weight:700
+}
+.cart-hdr-btn:hover .cart-hdr-num{background:#fff;color:var(--br)}
+.add-cart-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  width:100%;padding:10px;border-radius:9px;border:none;
+  background:var(--br);color:#fff;font-size:13px;font-weight:600;
+  cursor:pointer;transition:background .15s
+}
+.add-cart-btn:hover{background:#5C2742}
+.add-cart-btn:active{transform:scale(.98)}
+.add-cart-btn.added{background:#16a34a}
+.add-cart-btn i{font-size:15px}
+
+
+/* ── STOCK ─────────────────────────────────────────── */
+.stock-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:11px;font-weight:600;padding:3px 9px;
+  border-radius:100px;margin-bottom:8px;
+}
+.stock-ok   { background:#D1FAE5; color:#065F46; }
+.stock-poco { background:#FEF9C3; color:#713F12; }
+.stock-ago  { background:#FEE2E2; color:#991B1B; }
+.stock-dot  { width:6px;height:6px;border-radius:50%;flex-shrink:0; }
+.stock-ok   .stock-dot { background:#10B981; }
+.stock-poco .stock-dot { background:#F59E0B; }
+.stock-ago  .stock-dot { background:#EF4444; }
+
+/* tarjeta agotada */
+.card.agotada .card-img img,
+.card.agotada .card-img i { opacity:.35; }
+.card.agotada .card-img::after{
+  content:"Sin stock";
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:#991B1B;
+  background:rgba(255,255,255,.55);
+  border-radius:0;
+}
+.card.agotada .add-cart-btn{
+  background:#D1D5DB;color:#6B7280;cursor:not-allowed;
+}
+.card.agotada .add-cart-btn:hover{ background:#D1D5DB; }
+
+
+/* ── ADMIN PANEL ─────────────────────────────────────── */
+.admin-fab{
+  position:fixed;bottom:24px;left:24px;z-index:98;
+  width:42px;height:42px;border-radius:50%;
+  background:var(--br-pale);border:1.5px solid var(--br-soft);
+  color:var(--br);font-size:17px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 10px rgba(123,51,88,.15);
+  transition:all .2s;
+}
+.admin-fab:hover{background:var(--br);color:#fff;border-color:var(--br);}
+
+/* Login */
+.adm-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);
+  z-index:200;display:none;align-items:center;justify-content:center;
+}
+.adm-overlay.open{display:flex;}
+.adm-login{
+  background:var(--card-bg);border-radius:16px;padding:32px 28px;
+  width:320px;max-width:90vw;text-align:center;
+  box-shadow:0 12px 40px rgba(0,0,0,.18);
+}
+.adm-login-icon{font-size:36px;color:var(--br);margin-bottom:10px;}
+.adm-login h2{font-size:17px;font-weight:700;margin-bottom:4px;}
+.adm-login p{font-size:13px;color:var(--text-mute);margin-bottom:20px;}
+.adm-login input{
+  width:100%;padding:11px 14px;border-radius:9px;
+  border:1px solid var(--border);font-size:14px;
+  margin-bottom:10px;outline:none;text-align:center;letter-spacing:2px;
+}
+.adm-login input:focus{border-color:var(--br);}
+.adm-login-btn{
+  width:100%;padding:11px;border-radius:9px;border:none;
+  background:var(--br);color:#fff;font-size:14px;font-weight:600;cursor:pointer;
+}
+.adm-login-btn:hover{background:#5C2742;}
+.adm-login-err{font-size:12px;color:#ef4444;margin-top:8px;display:none;}
+.adm-login-cancel{
+  margin-top:10px;font-size:12px;color:var(--text-mute);
+  background:none;border:none;cursor:pointer;
+}
+.adm-login-cancel:hover{color:var(--text-dark);}
+
+/* Panel principal */
+.adm-panel{
+  position:fixed;inset:0;z-index:201;
+  background:#F8F4F6;display:none;flex-direction:column;overflow:hidden;
+}
+.adm-panel.open{display:flex;}
+.adm-top{
+  background:var(--br);color:#fff;padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.adm-top-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.adm-top-title i{font-size:17px;}
+.adm-top-right{display:flex;gap:8px;align-items:center;}
+.adm-save-btn{
+  padding:7px 16px;border-radius:8px;border:none;
+  background:#fff;color:var(--br);font-size:13px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;gap:6px;
+}
+.adm-save-btn:hover{background:#f0e4ea;}
+.adm-save-btn i{font-size:15px;}
+.adm-close-btn{
+  padding:7px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.3);
+  background:none;color:#fff;font-size:13px;cursor:pointer;
+  display:flex;align-items:center;gap:5px;
+}
+.adm-close-btn:hover{background:rgba(255,255,255,.15);}
+
+/* Tabs */
+.adm-tabs{
+  display:flex;gap:0;background:var(--br);
+  padding:0 20px;border-top:1px solid rgba(255,255,255,.15);flex-shrink:0;
+}
+.adm-tab{
+  padding:10px 16px;font-size:13px;font-weight:500;color:rgba(255,255,255,.65);
+  cursor:pointer;border-bottom:3px solid transparent;
+  display:flex;align-items:center;gap:6px;
+}
+.adm-tab:hover{color:#fff;}
+.adm-tab.on{color:#fff;border-bottom-color:#fff;font-weight:700;}
+.adm-tab i{font-size:15px;}
+
+/* Contenido */
+.adm-body{flex:1;overflow-y:auto;padding:16px 20px;}
+
+/* Búsqueda admin */
+.adm-search{
+  position:relative;margin-bottom:14px;
+}
+.adm-search i{
+  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  color:var(--text-mute);font-size:16px;pointer-events:none;
+}
+.adm-search input{
+  width:100%;padding:10px 14px 10px 38px;border-radius:9px;
+  border:1px solid var(--border);font-size:13px;background:#fff;outline:none;
+}
+.adm-search input:focus{border-color:var(--br);}
+
+/* Tarjeta de producto en admin */
+.adm-card{
+  background:#fff;border:1px solid var(--border);border-radius:12px;
+  padding:14px;margin-bottom:10px;
+}
+.adm-card-top{display:flex;align-items:flex-start;gap:12px;}
+.adm-card-icon{
+  width:44px;height:44px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.adm-card-info{flex:1;min-width:0;}
+.adm-card-name{font-size:13px;font-weight:600;margin-bottom:2px;line-height:1.3;}
+.adm-card-cat{font-size:11px;color:var(--text-mute);}
+.adm-card-fields{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;
+}
+.adm-field label{font-size:11px;color:var(--text-mute);font-weight:600;display:block;margin-bottom:4px;}
+.adm-field input, .adm-field select{
+  width:100%;padding:7px 10px;border-radius:7px;
+  border:1px solid var(--border);font-size:13px;outline:none;background:#fff;
+}
+.adm-field input:focus, .adm-field select:focus{border-color:var(--br);}
+.adm-field-full{grid-column:1/-1;}
+
+/* Badge de cambio */
+.adm-changed{border-color:var(--br)!important;background:#FBE8F0!important;}
+
+/* Stats */
+.adm-stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:16px;}
+.adm-stat{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;}
+.adm-stat-num{font-size:26px;font-weight:700;color:var(--br);}
+.adm-stat-lbl{font-size:12px;color:var(--text-mute);margin-top:4px;}
+.adm-stat i{font-size:22px;color:var(--br-soft);margin-bottom:6px;display:block;}
+
+/* Lista de stock rápido */
+.adm-stock-item{
+  background:#fff;border:1px solid var(--border);border-radius:10px;
+  padding:12px 14px;margin-bottom:8px;
+  display:flex;align-items:center;gap:12px;
+}
+.adm-stock-name{flex:1;font-size:13px;font-weight:500;}
+.adm-stock-select{
+  padding:6px 10px;border-radius:7px;border:1px solid var(--border);
+  font-size:12px;outline:none;cursor:pointer;
+}
+
+/* Toast */
+.adm-toast{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+  background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:100px;
+  font-size:13px;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;
+  display:flex;align-items:center;gap:7px;white-space:nowrap;
+}
+.adm-toast.show{opacity:1;}
+
+/* Sección agregar producto */
+.adm-add-form{background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px;}
+.adm-add-form h3{font-size:14px;font-weight:700;margin-bottom:14px;color:var(--br);}
+.adm-add-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.adm-add-field label{font-size:11px;color:var(--text-mute);font-weight:600;display:block;margin-bottom:4px;}
+.adm-add-field input, .adm-add-field select, .adm-add-field textarea{
+  width:100%;padding:9px 12px;border-radius:8px;
+  border:1px solid var(--border);font-size:13px;outline:none;
+}
+.adm-add-field input:focus, .adm-add-field select:focus, .adm-add-field textarea:focus{border-color:var(--br);}
+.adm-add-field-full{grid-column:1/-1;}
+.adm-add-btn{
+  width:100%;margin-top:14px;padding:12px;border-radius:9px;border:none;
+  background:var(--br);color:#fff;font-size:14px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+}
+.adm-add-btn:hover{background:#5C2742;}
+.adm-add-btn i{font-size:16px;}
+
+/* ocultar/mostrar producto */
+.adm-vis-btn{
+  padding:5px 10px;border-radius:6px;border:1px solid var(--border);
+  background:none;font-size:12px;cursor:pointer;color:var(--text-mute);
+  display:flex;align-items:center;gap:4px;
+}
+.adm-vis-btn:hover{border-color:var(--br);color:var(--br);}
+.adm-vis-btn.hidden-prod{border-color:#ef4444;color:#ef4444;background:#FEE2E2;}
+
+
+/* ── MODO OSCURO ─────────────────────────────────────── */
+body.dark {
+  --bg-page:#1A1016; --card-bg:#241820; --border:#3A2A32;
+  --text-dark:#F0E8ED; --text-gray:#B89FAA; --text-mute:#7A6070;
+  --br-pale:#2D1520; --br-soft:#8B4060;
+}
+body.dark .search-wrap input { background:#241820; color:#F0E8ED; }
+body.dark .pill { background:#241820; color:#B89FAA; }
+body.dark .adm-panel { background:#1A1016; }
+body.dark .adm-card { background:#241820; border-color:#3A2A32; }
+body.dark .adm-add-form { background:#241820; border-color:#3A2A32; }
+body.dark .adm-stock-item { background:#241820; border-color:#3A2A32; }
+body.dark .adm-search input { background:#241820; color:#F0E8ED; }
+body.dark .adm-field input,
+body.dark .adm-field select,
+body.dark .adm-add-field input,
+body.dark .adm-add-field select { background:#1A1016; color:#F0E8ED; border-color:#3A2A32; }
+body.dark .cart-panel { background:#241820; }
+body.dark .qty-btn { background:#1A1016; border-color:#3A2A32; color:#F0E8ED; }
+body.dark .adm-login { background:#241820; }
+body.dark .adm-login input { background:#1A1016; color:#F0E8ED; }
+
+/* ── BOTÓN MODO OSCURO ───────────────────────────────── */
+.dark-toggle {
+  background:var(--br-pale); border:1px solid var(--br-soft);
+  border-radius:100px; padding:7px 14px; cursor:pointer;
+  color:var(--br); font-size:14px; display:flex;
+  align-items:center; gap:6px; white-space:nowrap; font-weight:600;
+}
+.dark-toggle:hover { background:var(--br); color:#fff; border-color:var(--br); }
+.dark-toggle span { font-size:16px; line-height:1; }
+
+/* ── VOLVER ARRIBA ───────────────────────────────────── */
+.back-top {
+  position:fixed; bottom:24px; right:90px; z-index:97;
+  width:42px; height:42px; border-radius:50%;
+  background:var(--br-pale); border:1.5px solid var(--br-soft);
+  color:var(--br); font-size:20px; font-weight:700; cursor:pointer;
+  display:none; align-items:center; justify-content:center;
+  box-shadow:0 2px 10px rgba(123,51,88,.15);
+  transition:all .2s;
+}
+.back-top.show { display:flex; }
+.back-top:hover { background:var(--br); color:#fff; border-color:var(--br); }
+
+/* ── BARRA DE FILTROS EXTRA ──────────────────────────── */
+.extra-filters {
+  max-width:1100px; margin:0 auto;
+  padding:8px 1.25rem 0;
+  display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+}
+.extra-label {
+  font-size:12px; color:var(--text-mute); font-weight:600;
+  white-space:nowrap;
+}
+.extra-pill {
+  padding:6px 13px; border-radius:100px; font-size:12px; cursor:pointer;
+  border:1px solid var(--border); background:var(--card-bg);
+  color:var(--text-gray); white-space:nowrap; transition:all .15s;
+}
+.extra-pill:hover { border-color:var(--br-soft); color:var(--text-dark); }
+.extra-pill.on {
+  border:2px solid var(--br); color:var(--br);
+  font-weight:600; background:var(--br-pale);
+}
+.sort-select {
+  padding:6px 12px; border-radius:100px; font-size:12px;
+  border:1px solid var(--border); background:var(--card-bg);
+  color:var(--text-gray); cursor:pointer; outline:none;
+}
+.sort-select:focus { border-color:var(--br); }
+
+/* ── BOTÓN AVÍSAME ───────────────────────────────────── */
+.notify-btn {
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  width:100%; padding:10px; border-radius:9px; border:none;
+  background:#FEF9C3; color:#713F12; font-size:13px; font-weight:600;
+  cursor:pointer; transition:background .15s;
+}
+.notify-btn:hover { background:#FEF08A; }
+.notify-btn i { font-size:15px; }
+
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-top">
+    <div>
+      <p class="brand"><i class="ti ti-sparkles"></i> Salyn Store</p>
+      <p class="subtitle">Belleza &amp; Skincare · Lima, Perú</p>
+    </div>
+    <div style="display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap">
+      <div id="wishChip" class="wish-chip" style="display:none">
+        <i class="ti ti-heart"></i><span id="wishCount">0 favoritas</span>
+      </div>
+      <button class="dark-toggle" onclick="toggleDark()" id="darkToggle" title="Modo oscuro">
+        <span id="darkIcon">🌙</span>
+      </button>
+      <button class="cart-hdr-btn" onclick="openCart()" id="cartHdrBtn">
+        <span style="font-size:15px">&#128722;</span>
+        <span>Carrito</span>
+        <span class="cart-hdr-num" id="cartHdrNum" style="display:none">0</span>
+      </button>
+    </div>
+  </div>
+  <div class="accent-bar"></div>
+</header>
+
+<div class="controls">
+  <div class="search-wrap">
+    <i class="ti ti-search"></i>
+    <input type="search" id="searchInput" placeholder="Buscar productos..." aria-label="Buscar productos">
+  </div>
+  <div class="pills" id="pills" role="group" aria-label="Filtrar por categoría"></div>
+</div>
+
+<div class="extra-filters">
+  <span class="extra-label">Presupuesto:</span>
+  <button class="extra-pill" data-budget="all"    onclick="setBudget('all')">Todos</button>
+  <button class="extra-pill" data-budget="0-5"    onclick="setBudget('0-5')">Hasta S/5</button>
+  <button class="extra-pill" data-budget="5-15"   onclick="setBudget('5-15')">S/5 – S/15</button>
+  <button class="extra-pill" data-budget="15-30"  onclick="setBudget('15-30')">S/15 – S/30</button>
+  <span class="extra-label" style="margin-left:8px">Ordenar:</span>
+  <select class="sort-select" id="sortSelect" onchange="setSort(this.value)">
+    <option value="default">Por defecto</option>
+    <option value="price-asc">Precio: menor a mayor</option>
+    <option value="price-desc">Precio: mayor a menor</option>
+    <option value="name-asc">Nombre A–Z</option>
+    <option value="name-desc">Nombre Z–A</option>
+  </select>
+</div>
+<p class="result-count" id="resultCount"></p>
+<div class="grid" id="grid"></div>
+
+<footer class="footer">
+  <p>¿Tienes alguna duda? Escríbenos directamente</p>
+  <button class="footer-btn" onclick="contactGeneral()">
+    <i class="ti ti-brand-whatsapp"></i> Hablar con Salyn Store
+  </button>
+  <p class="footer-note">Atención por WhatsApp · Envíos a todo el Perú</p>
+</footer>
+
+<script>
+/* ============================================================
+   6. TU NÚMERO DE WHATSAPP
+   ============================================================ */
+const WHATSAPP_NUMBER = "51977975478";
+
+/* ============================================================
+   7. TUS PRODUCTOS
+   ============================================================ */
+const PRODUCTS = [
+  {
+    "id": 1,
+    "name": "Parches contra granitos Dra. la Rosa",
+    "cat": "Skincare",
+    "key": "sk",
+    "brand": "Dra. la Rosa",
+    "price": 6,
+    "icon": "ti-sparkles",
+    "img": "",
+    "desc": "Reduce granitos y rojeces durante la noche.",
+    "stock": "ok"
+  },
+  {
+    "id": 2,
+    "name": "Pañitos Capibara",
+    "cat": "Skincare",
+    "key": "sk",
+    "brand": "Salyn Store",
+    "price": 1,
+    "icon": "ti-sparkles",
+    "img": "",
+    "desc": "Limpian y refrescan el rostro. Diseño capibara.",
+    "stock": "ok"
+  },
+  {
+    "id": 3,
+    "name": "Pañitos Gatito",
+    "cat": "Skincare",
+    "key": "sk",
+    "brand": "Salyn Store",
+    "price": 1,
+    "icon": "ti-sparkles",
+    "img": "",
+    "desc": "Limpian y refrescan el rostro. Diseño gatito.",
+    "stock": "ok"
+  },
+  {
+    "id": 4,
+    "name": "Exfoliante durazno",
+    "cat": "Skincare",
+    "key": "sk",
+    "brand": "Salyn Store",
+    "price": 18,
+    "icon": "ti-droplet",
+    "img": "",
+    "desc": "Exfolia suavemente. Aroma a durazno. Piel suave.",
+    "stock": "ok"
+  },
+  {
+    "id": 5,
+    "name": "Exfoliante arroz Dra. la Rosa",
+    "cat": "Skincare",
+    "key": "sk",
+    "brand": "Dra. la Rosa",
+    "price": 18,
+    "icon": "ti-droplet",
+    "img": "",
+    "desc": "Suaviza e ilumina. Fórmula con arroz coreano.",
+    "stock": "ok"
+  },
+  {
+    "id": 6,
+    "name": "Desmaquillante Bioaqua 300ml",
+    "cat": "Skincare",
+    "key": "sk",
+    "brand": "Bioaqua",
+    "price": 20,
+    "icon": "ti-droplets",
+    "img": "",
+    "desc": "Retira el maquillaje suavemente. Rinde mucho.",
+    "tag": "Top ventas",
+    "tagIcon": "ti-trending-up",
+    "stock": "agotado"
+  },
+  {
+    "id": 7,
+    "name": "Exfoliante de pies",
+    "cat": "Skincare",
+    "key": "sk",
+    "brand": "Salyn Store",
+    "price": 18,
+    "icon": "ti-droplet",
+    "img": "",
+    "desc": "Elimina callosidades. Pies suaves desde la primera vez.",
+    "stock": "agotado"
+  },
+  {
+    "id": 8,
+    "name": "Exfoliante de cuerpo 250ml",
+    "cat": "Skincare",
+    "key": "sk",
+    "brand": "Salyn Store",
+    "price": 18,
+    "icon": "ti-droplet",
+    "img": "",
+    "desc": "Exfolia e hidrata todo el cuerpo. 250ml.",
+    "stock": "ok"
+  },
+  {
+    "id": 9,
+    "name": "Limpiador facial coreano",
+    "cat": "Skincare",
+    "key": "sk",
+    "brand": "Salyn Store",
+    "price": 15,
+    "icon": "ti-droplets",
+    "img": "",
+    "desc": "Limpieza profunda con activos coreanos.",
+    "stock": "agotado"
+  },
+  {
+    "id": 10,
+    "name": "Parche de ojeras pote",
+    "cat": "Skincare",
+    "key": "sk",
+    "brand": "Salyn Store",
+    "price": 18,
+    "icon": "ti-eye",
+    "img": "",
+    "desc": "Reduce bolsas y ojeras. Efecto tensor e hidratante.",
+    "stock": "agotado"
+  },
+  {
+    "id": 11,
+    "name": "Pure Skin Cream acne Bioaqua",
+    "cat": "Skincare",
+    "key": "sk",
+    "brand": "Bioaqua",
+    "price": 12,
+    "icon": "ti-sparkles",
+    "img": "",
+    "desc": "Crema anti-acné. Controla el brillo y granitos.",
+    "stock": "ok"
+  },
+  {
+    "id": 12,
+    "name": "Limpiador mousse de arroz",
+    "cat": "Skincare",
+    "key": "sk",
+    "brand": "Salyn Store",
+    "price": 18,
+    "icon": "ti-droplets",
+    "img": "",
+    "desc": "Mousse suave con extracto de arroz. Sin resecar.",
+    "stock": "agotado"
+  },
+  {
+    "id": 13,
+    "name": "Parches de labios",
+    "cat": "Skincare",
+    "key": "sk",
+    "brand": "Salyn Store",
+    "price": 2,
+    "icon": "ti-heart",
+    "img": "",
+    "desc": "Hidrata y rellena los labios. Efecto inmediato.",
+    "stock": "ok"
+  },
+  {
+    "id": 14,
+    "name": "Antifaz gel",
+    "cat": "Skincare",
+    "key": "sk",
+    "brand": "Salyn Store",
+    "price": 6,
+    "icon": "ti-eye",
+    "img": "",
+    "desc": "Antifaz de gel frío. Reduce hinchazón y cansancio.",
+    "stock": "ok"
+  },
+  {
+    "id": 15,
+    "name": "Gloss Llavero",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Salyn Store",
+    "price": 6,
+    "icon": "ti-droplet",
+    "img": "",
+    "desc": "Gloss brillante con llavero. Llévalo siempre contigo.",
+    "stock": "ok"
+  },
+  {
+    "id": 16,
+    "name": "Lip Oil brillos",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Salyn Store",
+    "price": 6.5,
+    "icon": "ti-droplet",
+    "img": "",
+    "desc": "Hidrata y brilla a la vez. Varios colores.",
+    "stock": "ok"
+  },
+  {
+    "id": 17,
+    "name": "Lip Gloss PH",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Salyn Store",
+    "price": 6,
+    "icon": "ti-circle",
+    "img": "",
+    "desc": "Cambia de color según tu pH. Único y personalizado.",
+    "stock": "ok"
+  },
+  {
+    "id": 18,
+    "name": "Lip Balm",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Salyn Store",
+    "price": 6,
+    "icon": "ti-circle",
+    "img": "",
+    "desc": "Hidratación profunda para los labios. Aroma dulce.",
+    "stock": "ok"
+  },
+  {
+    "id": 19,
+    "name": "Rubor osito",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Salyn Store",
+    "price": 6,
+    "icon": "ti-circle",
+    "img": "",
+    "desc": "Rubor con diseño de osito. Rosa natural y duradero.",
+    "tag": "Favorita",
+    "tagIcon": "ti-flame",
+    "stock": "ok"
+  },
+  {
+    "id": 20,
+    "name": "Lápiz de ojos",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Salyn Store",
+    "price": 5.5,
+    "icon": "ti-pencil",
+    "img": "",
+    "desc": "Trazo preciso y duradero. Negro intenso.",
+    "stock": "ok"
+  },
+  {
+    "id": 21,
+    "name": "Rimel",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Salyn Store",
+    "price": 7,
+    "icon": "ti-eye",
+    "img": "",
+    "desc": "Alarga y define las pestañas. Sin grumos.",
+    "stock": "ok"
+  },
+  {
+    "id": 22,
+    "name": "Esponjas",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Salyn Store",
+    "price": 2,
+    "icon": "ti-circle",
+    "img": "",
+    "desc": "Para aplicar base y corrector. Acabado sin marcas.",
+    "stock": "ok"
+  },
+  {
+    "id": 23,
+    "name": "Tinta doble",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Salyn Store",
+    "price": 6.5,
+    "icon": "ti-pencil",
+    "img": "",
+    "desc": "Doble punta para ojos y labios. Larga duración.",
+    "stock": "agotado"
+  },
+  {
+    "id": 24,
+    "name": "Gloss doble",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Salyn Store",
+    "price": 6.5,
+    "icon": "ti-droplet",
+    "img": "",
+    "desc": "Dos tonos en uno. Acabado brillante irresistible.",
+    "stock": "agotado"
+  },
+  {
+    "id": 25,
+    "name": "Lip Oil Fruts",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Salyn Store",
+    "price": 6,
+    "icon": "ti-droplet",
+    "img": "",
+    "desc": "Lip oil con aroma a frutas. Hidrata y da brillo.",
+    "stock": "ok"
+  },
+  {
+    "id": 26,
+    "name": "Gloss tipo Dior pack x2",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Salyn Store",
+    "price": 13.5,
+    "icon": "ti-droplet",
+    "img": "",
+    "desc": "Pack de 2 glosses tipo Dior. Acabado lujoso.",
+    "tag": "Oferta",
+    "tagIcon": "ti-tag",
+    "stock": "ok"
+  },
+  {
+    "id": 27,
+    "name": "Paleta de sombras",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Salyn Store",
+    "price": 25,
+    "icon": "ti-palette",
+    "img": "",
+    "desc": "Tonos variados para cualquier look. Alta pigmentación.",
+    "stock": "ok"
+  },
+  {
+    "id": 28,
+    "name": "Delineador dupe",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Salyn Store",
+    "price": 8.5,
+    "icon": "ti-pencil",
+    "img": "",
+    "desc": "Trazo fino y preciso. Negro intenso de larga duración.",
+    "stock": "agotado"
+  },
+  {
+    "id": 29,
+    "name": "Set borlas",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Salyn Store",
+    "price": 7.5,
+    "icon": "ti-star",
+    "img": "",
+    "desc": "Set de borlas profesionales. Suaves para polvos.",
+    "stock": "ok"
+  },
+  {
+    "id": 30,
+    "name": "Mascarilla de velo Bioaqua",
+    "cat": "Mascarillas",
+    "key": "ma",
+    "brand": "Bioaqua",
+    "price": 2.5,
+    "icon": "ti-leaf",
+    "img": "",
+    "desc": "Mascarilla de velo hidratante. Piel luminosa.",
+    "stock": "ok"
+  },
+  {
+    "id": 31,
+    "name": "Mascarilla facial Kiss Beauty",
+    "cat": "Mascarillas",
+    "key": "ma",
+    "brand": "Kiss Beauty",
+    "price": 2.5,
+    "icon": "ti-leaf",
+    "img": "",
+    "desc": "Hidratación y suavidad en 5 minutos.",
+    "stock": "ok"
+  },
+  {
+    "id": 32,
+    "name": "Mascarilla Bioaqua Pure",
+    "cat": "Mascarillas",
+    "key": "ma",
+    "brand": "Bioaqua",
+    "price": 5,
+    "icon": "ti-leaf",
+    "img": "",
+    "desc": "Limpieza profunda. Poros visiblemente reducidos.",
+    "stock": "ok"
+  },
+  {
+    "id": 33,
+    "name": "Mascarilla Dra. la Rosa",
+    "cat": "Mascarillas",
+    "key": "ma",
+    "brand": "Dra. la Rosa",
+    "price": 3,
+    "icon": "ti-leaf",
+    "img": "",
+    "desc": "Con activos naturales. Piel suave y radiante.",
+    "stock": "ok"
+  },
+  {
+    "id": 34,
+    "name": "Crema de manos Bioaqua 30g",
+    "cat": "Cremas",
+    "key": "cr",
+    "brand": "Bioaqua",
+    "price": 3,
+    "icon": "ti-hand-stop",
+    "img": "",
+    "desc": "Hidratación rápida. Perfecto para llevar en la cartera.",
+    "stock": "ok"
+  },
+  {
+    "id": 35,
+    "name": "Pestañas postizas",
+    "cat": "Pestañas",
+    "key": "pe",
+    "brand": "Salyn Store",
+    "price": 4,
+    "icon": "ti-eye",
+    "img": "",
+    "desc": "Look natural o dramático. Fáciles de aplicar.",
+    "stock": "ok"
+  },
+  {
+    "id": 36,
+    "name": "Perfume dupe Victoria Secret",
+    "cat": "Perfumes",
+    "key": "pf",
+    "brand": "Dupe VS",
+    "price": 25,
+    "icon": "ti-wind",
+    "img": "",
+    "desc": "Inspirado en VS. Floral y femenino. Duración todo el día.",
+    "tag": "Top ventas",
+    "tagIcon": "ti-trending-up",
+    "stock": "ok"
+  },
+  {
+    "id": 37,
+    "name": "Lima de uñas pack x2",
+    "cat": "Uñas",
+    "key": "un",
+    "brand": "Salyn Store",
+    "price": 4,
+    "icon": "ti-star",
+    "img": "",
+    "desc": "Pack de 2 limas para dar forma perfecta a las uñas.",
+    "stock": "ok"
+  },
+  {
+    "id": 38,
+    "name": "Set de uñas acrílicas",
+    "cat": "Uñas",
+    "key": "un",
+    "brand": "Salyn Store",
+    "price": 8,
+    "icon": "ti-star",
+    "img": "",
+    "desc": "Set completo con diseños variados. Aplicación fácil.",
+    "stock": "ok"
+  },
+  {
+    "id": 39,
+    "name": "Uñas postizas",
+    "cat": "Uñas",
+    "key": "un",
+    "brand": "Salyn Store",
+    "price": 5.5,
+    "icon": "ti-star",
+    "img": "",
+    "desc": "Listas para aplicar. Variedad de formas y tamaños.",
+    "stock": "ok"
+  },
+  {
+    "id": 40,
+    "name": "Mini limas x2",
+    "cat": "Uñas",
+    "key": "un",
+    "brand": "Salyn Store",
+    "price": 1.5,
+    "icon": "ti-star",
+    "img": "",
+    "desc": "Pack de 2 mini limas. Perfectas para la cartera.",
+    "stock": "ok"
+  },
+  {
+    "id": 41,
+    "name": "Lampara de uñas UV",
+    "cat": "Uñas",
+    "key": "un",
+    "brand": "Salyn Store",
+    "price": 10,
+    "icon": "ti-star",
+    "img": "",
+    "desc": "Seca el esmalte en segundos. Compacto y práctico.",
+    "stock": "ok"
+  },
+  {
+    "id": 42,
+    "name": "Mini plancha",
+    "cat": "Cabello",
+    "key": "ca",
+    "brand": "Salyn Store",
+    "price": 13,
+    "icon": "ti-sparkles",
+    "img": "",
+    "desc": "Plancha compacta para el cabello. Ideal para viajes.",
+    "stock": "agotado"
+  },
+  {
+    "id": 43,
+    "name": "Tratamiento de keratina",
+    "cat": "Cabello",
+    "key": "ca",
+    "brand": "Salyn Store",
+    "price": 6.5,
+    "icon": "ti-droplet",
+    "img": "",
+    "desc": "Nutre y alisa el cabello. Resultados desde el primer uso.",
+    "stock": "agotado"
+  },
+  {
+    "id": 44,
+    "name": "Rulero",
+    "cat": "Cabello",
+    "key": "ca",
+    "brand": "Salyn Store",
+    "price": 8,
+    "icon": "ti-circle",
+    "img": "",
+    "desc": "Para rizar el cabello en casa. Fácil de usar.",
+    "stock": "ok"
+  },
+  {
+    "id": 45,
+    "name": "Espejo cuadrado",
+    "cat": "Accesorios",
+    "key": "ac",
+    "brand": "Salyn Store",
+    "price": 6,
+    "icon": "ti-star",
+    "img": "",
+    "desc": "Espejo compacto cuadrado. Ideal para el bolso.",
+    "stock": "ok"
+  },
+  {
+    "id": 46,
+    "name": "Mini espejos",
+    "cat": "Accesorios",
+    "key": "ac",
+    "brand": "Salyn Store",
+    "price": 3,
+    "icon": "ti-star",
+    "img": "",
+    "desc": "Espejo mini portátil. Para retoques al instante.",
+    "stock": "ok"
+  },
+  {
+    "id": 47,
+    "name": "Ventilador capibara",
+    "cat": "Accesorios",
+    "key": "ac",
+    "brand": "Capibara",
+    "price": 7,
+    "icon": "ti-wind",
+    "img": "",
+    "desc": "Mini ventilador con diseño capibara. Recargable.",
+    "tag": "Nuevo",
+    "tagIcon": "ti-sparkles",
+    "stock": "ok"
+  },
+  {
+    "id": 48,
+    "name": "Espejo LED 3 colores",
+    "cat": "Accesorios",
+    "key": "ac",
+    "brand": "Salyn Store",
+    "price": 20,
+    "icon": "ti-star",
+    "img": "",
+    "desc": "Espejo con luz LED en 3 tonos. Perfecto para maquillarte.",
+    "stock": "ok"
+  },
+  {
+    "id": 49,
+    "name": "Peine de ceja/pestaña (x2)",
+    "cat": "Accesorios",
+    "key": "ac",
+    "brand": "Salyn Store",
+    "price": 0.5,
+    "icon": "ti-star",
+    "img": "",
+    "desc": "Mini peine para definir cejas y pestañas. Liviano.",
+    "stock": "ok"
+  },
+  {
+    "id": 50,
+    "name": "Mini gancho",
+    "cat": "Accesorios",
+    "key": "ac",
+    "brand": "Salyn Store",
+    "price": 1.5,
+    "icon": "ti-star",
+    "img": "",
+    "desc": "Ganchito pequeño para el cabello. Colores variados.",
+    "stock": "ok"
+  },
+  {
+    "id": 51,
+    "name": "Delineador",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Salyn Store",
+    "price": 3.5,
+    "icon": "ti-pencil",
+    "img": "",
+    "desc": "Trazo fino y preciso. Negro intenso de larga duración.",
+    "stock": "ok"
+  },
+  {
+    "id": 52,
+    "name": "Gancho hawaiano",
+    "cat": "Accesorios",
+    "key": "ac",
+    "brand": "Salyn Store",
+    "price": 2.5,
+    "icon": "ti-star",
+    "img": "",
+    "desc": "Gancho de cabello estilo hawaiano. Colores tropicales.",
+    "stock": "ok"
+  },
+  {
+    "id": 53,
+    "name": "Crema de manos durazno 2g",
+    "cat": "Cremas",
+    "key": "cr",
+    "brand": "Salyn Store",
+    "price": 1,
+    "icon": "ti-hand-stop",
+    "img": "",
+    "desc": "Mini crema de manos con aroma a durazno. Para la cartera.",
+    "stock": "ok"
+  },
+  {
+    "id": 54,
+    "name": "Rimel Belle Spa",
+    "cat": "Maquillaje",
+    "key": "mq",
+    "brand": "Belle Spa",
+    "price": 3.5,
+    "icon": "ti-eye",
+    "img": "",
+    "desc": "Alarga y define las pestañas. Fórmula suave.",
+    "stock": "ok"
+  },
+  {
+    "id": 55,
+    "name": "Tiras de nariz",
+    "cat": "Skincare",
+    "key": "sk",
+    "brand": "Salyn Store",
+    "price": 2,
+    "icon": "ti-sparkles",
+    "img": "",
+    "desc": "Limpia poros de la nariz. Retira puntos negros.",
+    "stock": "ok"
+  },
+  {
+    "id": 56,
+    "name": "Set rizador",
+    "cat": "Cabello",
+    "key": "ca",
+    "brand": "Salyn Store",
+    "price": 6.5,
+    "icon": "ti-sparkles",
+    "img": "",
+    "desc": "Set para rizar el cabello. Rizos definidos y duraderos.",
+    "tag": "Nuevo",
+    "tagIcon": "ti-sparkles",
+    "stock": "ok"
+  },
+  {
+    "id": 57,
+    "name": "Parche de ojeras",
+    "cat": "Skincare",
+    "key": "sk",
+    "brand": "Salyn Store",
+    "price": 2,
+    "icon": "ti-eye",
+    "img": "",
+    "desc": "Parches individuales para ojeras. Hidrata y refresca.",
+    "stock": "ok"
+  }
+];
+
+/* ============================================================
+   8. LÓGICA DEL CATÁLOGO
+   ============================================================ */
+const CATEGORIES = ["Todos", ...new Set(PRODUCTS.map(p => p.cat))];
+let activeCat   = "Todos";
+let searchQuery = "";
+let wishlist    = new Set();
+let activeBudget = "all";
+let activeSort   = "default";
+
+// ── Filtro principal ──────────────────────────────────────────
+function getFiltered() {
+  let list = PRODUCTS.filter(p =>
+    !p.hidden &&
+    (activeCat === "Todos" || p.cat === activeCat) &&
+    (p.name + " " + p.cat + " " + p.brand).toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  if (activeBudget === "0-5")   list = list.filter(p => p.price <= 5);
+  if (activeBudget === "5-15")  list = list.filter(p => p.price > 5  && p.price <= 15);
+  if (activeBudget === "15-30") list = list.filter(p => p.price > 15 && p.price <= 30);
+  if (activeSort === "price-asc")  list = [...list].sort((a,b) => a.price - b.price);
+  if (activeSort === "price-desc") list = [...list].sort((a,b) => b.price - a.price);
+  if (activeSort === "name-asc")   list = [...list].sort((a,b) => a.name.localeCompare(b.name));
+  if (activeSort === "name-desc")  list = [...list].sort((a,b) => b.name.localeCompare(a.name));
+  return list;
+}
+
+// ── Pills de categoría ────────────────────────────────────────
+function renderPills() {
+  const wrap = document.getElementById("pills");
+  wrap.innerHTML = "";
+  CATEGORIES.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.className = "pill" + (cat === activeCat ? " active" : "");
+    btn.textContent = cat;
+    btn.setAttribute("aria-pressed", cat === activeCat);
+    btn.onclick = () => { activeCat = cat; renderPills(); renderGrid(); };
+    wrap.appendChild(btn);
+  });
+}
+
+// ── Presupuesto y orden ───────────────────────────────────────
+function setBudget(val) {
+  activeBudget = val;
+  document.querySelectorAll("[data-budget]").forEach(btn => {
+    btn.classList.toggle("on", btn.dataset.budget === val);
+  });
+  renderGrid();
+}
+function setSort(val) {
+  activeSort = val;
+  renderGrid();
+}
+
+// ── Stock chip ────────────────────────────────────────────────
+function stockChip(s) {
+  if (s === "agotado") return '<span class="stock-chip stock-ago"><span class="stock-dot"></span>Agotado</span>';
+  if (s === "poco")    return '<span class="stock-chip stock-poco"><span class="stock-dot"></span>\u00daltimas unidades</span>';
+  return '<span class="stock-chip stock-ok"><span class="stock-dot"></span>Disponible</span>';
+}
+
+// ── Render grilla ─────────────────────────────────────────────
+function renderGrid() {
+  const grid    = document.getElementById("grid");
+  const filtered = getFiltered();
+  const countEl  = document.getElementById("resultCount");
+
+  countEl.textContent = filtered.length + (filtered.length === 1 ? " producto" : " productos") +
+    (activeCat !== "Todos" ? " en " + activeCat : "") +
+    (searchQuery ? ' para "' + searchQuery + '"' : "");
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1">' +
+      '<i class="ti ti-search"></i>' +
+      '<p class="title">Sin resultados</p>' +
+      '<p>Intenta con otro t\u00e9rmino o categor\u00eda.</p>' +
+      '<button onclick="document.getElementById(\'searchInput\').value=\'\';searchQuery=\'\';activeCat=\'Todos\';renderPills();renderGrid();">Ver todos los productos</button>' +
+      '</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(function(p) {
+    var isAgotado = p.stock === "agotado";
+    var isWished  = wishlist.has(p.id);
+    var heartIcon = isWished ? "&#9829;" : "&#9825;";
+    var imgHtml, tagHtml, actionBtn;
+
+    if (p.img) {
+      imgHtml = '<img src="' + p.img + '" alt="' + p.name + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">' +
+                '<i class="ti ' + p.icon + ' tx-' + p.key + '" style="display:none;position:absolute;"></i>';
+    } else {
+      imgHtml = '<i class="ti ' + p.icon + ' tx-' + p.key + '"></i>';
+    }
+
+    tagHtml = p.tag
+      ? '<span class="tag"><i class="ti ' + p.tagIcon + '"></i> ' + p.tag + '</span>'
+      : "";
+
+    if (isAgotado) {
+      actionBtn = '<button class="notify-btn" onclick="notifyMe(' + p.id + ')">' +
+                  '<i class="ti ti-bell"></i> Av\u00edsame cuando llegue</button>';
+    } else {
+      actionBtn = '<button class="add-cart-btn" id="btn-' + p.id + '" onclick="addToCartById(' + p.id + ')">' +
+                  '<span style="font-size:14px">&#43;</span> Agregar al carrito</button>';
+    }
+
+    return '<div class="card' + (isAgotado ? ' agotada' : '') + '">' +
+      '<div class="card-img bg-' + p.key + '">' + imgHtml + tagHtml + '</div>' +
+      '<div class="card-body">' +
+        '<p class="cat-label">' + p.cat + '</p>' +
+        '<p class="prod-name">'  + p.name + '</p>' +
+        '<p class="prod-brand">' + p.brand + '</p>' +
+        '<p class="prod-desc">'  + p.desc + '</p>' +
+        stockChip(p.stock || "ok") +
+        '<div class="price-row">' +
+          '<span class="price">S/ ' + p.price + '</span>' +
+          '<button class="heart-btn' + (isWished ? ' active' : '') + '" ' +
+                  'aria-label="' + (isWished ? 'Quitar de favoritas' : 'Guardar en favoritas') + '" ' +
+                  'onclick="toggleWish(' + p.id + ')">' +
+            '<span style="font-size:16px">' + heartIcon + '</span>' +
+          '</button>' +
+        '</div>' +
+        actionBtn +
+      '</div>' +
+    '</div>';
+  }).join("");
+}
+
+document.getElementById("searchInput").addEventListener("input", function(e) {
+  searchQuery = e.target.value;
+  renderGrid();
+});
+
+// ── Wishlist ──────────────────────────────────────────────────
+function toggleWish(id) {
+  wishlist.has(id) ? wishlist.delete(id) : wishlist.add(id);
+  renderGrid();
+  updateWishChip();
+}
+function updateWishChip() {
+  var chip  = document.getElementById("wishChip");
+  var count = document.getElementById("wishCount");
+  if (wishlist.size > 0) {
+    chip.style.display = "flex";
+    count.textContent = wishlist.size + (wishlist.size === 1 ? " favorita" : " favoritas");
+  } else {
+    chip.style.display = "none";
+  }
+}
+
+// ── WhatsApp ──────────────────────────────────────────────────
+function orderProduct(p) {
+  var msg = encodeURIComponent("Hola Salyn Store!  Me interesa:\n " + p.name + "\nPrecio: S/ " + p.price + "\nEst\u00e1 disponible?");
+  window.open("https://wa.me/" + WHATSAPP_NUMBER + "?text=" + msg, "_blank");
+}
+function contactGeneral() {
+  var msg = encodeURIComponent("Hola Salyn Store! Me gustaria conocer mas sobre sus productos. Podrias ayudarme?");
+  window.open("https://wa.me/" + WHATSAPP_NUMBER + "?text=" + msg, "_blank");
+}
+function notifyMe(id) {
+  var p = PRODUCTS.find(function(x) { return x.id === id; });
+  if (!p) return;
+  var msg = encodeURIComponent("Hola Salyn Store! Me gustaria que me avises cuando llegue:\n\n- " + p.name + "\n\nGracias!");
+  window.open("https://wa.me/" + WHATSAPP_NUMBER + "?text=" + msg, "_blank");
+}
+
+// ── CARRITO ───────────────────────────────────────────────────
+var cart = [];
+
+function addToCartById(id) {
+  var p = PRODUCTS.find(function(x) { return x.id === id; });
+  if (!p || p.stock === "agotado") return;
+  var existing = cart.find(function(x) { return x.id === id; });
+  if (existing) { existing.qty++; }
+  else { cart.push({ id:p.id, name:p.name, price:p.price, icon:p.icon, key:p.key, qty:1 }); }
+  updateBadge();
+  showFeedback(id);
+}
+function removeFromCart(id) {
+  cart = cart.filter(function(x) { return x.id !== id; });
+  updateBadge();
+  renderCartBody();
+}
+function updateQty(id, delta) {
+  var item = cart.find(function(x) { return x.id === id; });
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) { removeFromCart(id); return; }
+  updateBadge();
+  renderCartBody();
+}
+function clearCart() {
+  if (cart.length === 0) return;
+  cart = [];
+  updateBadge();
+  renderCartBody();
+  showToast("Carrito vaciado", "ok");
+}
+function getTotal() { return cart.reduce(function(s,i) { return s + i.price * i.qty; }, 0); }
+function getCount() { return cart.reduce(function(s,i) { return s + i.qty; }, 0); }
+
+function updateBadge() {
+  var n       = getCount();
+  var numEl   = document.getElementById("cartHdrNum");
+  var floatEl = document.getElementById("floatCart");
+  var fbadge  = document.getElementById("floatBadge");
+  if (n > 0) {
+    numEl.textContent = n; numEl.style.display = "inline-flex";
+    floatEl.classList.add("on"); fbadge.textContent = n;
+  } else {
+    numEl.style.display = "none"; floatEl.classList.remove("on");
+  }
+}
+
+function renderCartBody() {
+  var body  = document.getElementById("cartBody");
+  var foot  = document.getElementById("cartFoot");
+  var total = document.getElementById("cartTotalAmt");
+  var cline = document.getElementById("cartCountLine");
+
+  if (cart.length === 0) {
+    body.innerHTML = '<div class="cart-empty-msg">' +
+      '<i class="ti ti-shopping-cart"></i>' +
+      '<p>Tu carrito est\u00e1 vac\u00edo</p>' +
+      '<p>Toca "Agregar al carrito" en los productos que quieras.</p></div>';
+    foot.style.display = "none";
+    return;
+  }
+  foot.style.display = "block";
+  var n = getCount();
+  cline.textContent = n + (n === 1 ? " producto" : " productos") + " en tu pedido";
+  total.textContent = "S/ " + getTotal().toFixed(2);
+
+  body.innerHTML = cart.map(function(item) {
+    return '<div class="cart-pitem">' +
+      '<div class="cart-pitem-img bg-' + item.key + '">' +
+        '<i class="ti ' + item.icon + ' tx-' + item.key + '"></i>' +
+      '</div>' +
+      '<div class="cart-pitem-info">' +
+        '<p class="cart-pitem-name">' + item.name + '</p>' +
+        '<p class="cart-pitem-unit">S/ ' + item.price.toFixed(2) + ' c/u</p>' +
+        '<div class="cart-qty-row">' +
+          '<button class="qty-btn" onclick="updateQty(' + item.id + ',-1)">\u2212</button>' +
+          '<span class="qty-num">' + item.qty + '</span>' +
+          '<button class="qty-btn" onclick="updateQty(' + item.id + ',1)">+</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="cart-pitem-right">' +
+        '<button class="cart-remove" onclick="removeFromCart(' + item.id + ')"><i class="ti ti-x"></i></button>' +
+        '<span class="cart-pitem-sub">S/ ' + (item.price * item.qty).toFixed(2) + '</span>' +
+      '</div>' +
+    '</div>';
+  }).join("");
+}
+
+function openCart() {
+  renderCartBody();
+  document.getElementById("cartPanel").classList.add("open");
+  document.getElementById("cartOverlay").classList.add("open");
+}
+function closeCart() {
+  document.getElementById("cartPanel").classList.remove("open");
+  document.getElementById("cartOverlay").classList.remove("open");
+}
+function sendCartToWA() {
+  if (cart.length === 0) return;
+  var msg = "Hola Salyn Store! Quiero hacer un pedido:\n\n";
+  cart.forEach(function(i) {
+    msg += "- " + i.qty + "x " + i.name + " - S/ " + (i.price * i.qty).toFixed(2) + "\n";
+  });
+  msg += "\nTotal: S/ " + getTotal().toFixed(2);
+  msg += "\n\nMe confirmas disponibilidad?";
+  window.open("https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(msg), "_blank");
+}
+
+function showFeedback(id) {
+  var btn = document.getElementById("btn-" + id);
+  if (!btn) return;
+  btn.classList.add("added");
+  btn.innerHTML = '<span style="font-size:14px">&#10003;</span> Agregado';
+  setTimeout(function() {
+    btn.classList.remove("added");
+    var qty = (cart.find(function(x) { return x.id === id; }) || {}).qty || 0;
+    btn.innerHTML = qty > 1
+      ? '<span style="font-size:14px">&#43;</span> Agregar (' + qty + ' en carrito)'
+      : '<span style="font-size:14px">&#43;</span> Agregar al carrito';
+  }, 1400);
+}
+
+// ── MODO OSCURO ───────────────────────────────────────────────
+function toggleDark() {
+  var dark = document.body.classList.toggle("dark");
+  var icon = document.getElementById("darkIcon");
+  icon.textContent = dark ? "\u2600\ufe0f" : "";
+  try { localStorage.setItem("salyn-dark", dark ? "1" : "0"); } catch(e) {}
+}
+(function initDark() {
+  try {
+    if (localStorage.getItem("salyn-dark") === "1") {
+      document.body.classList.add("dark");
+      var icon = document.getElementById("darkIcon");
+      if (icon) icon.textContent = "\u2600\ufe0f";
+    }
+  } catch(e) {}
+})();
+
+// ── VOLVER ARRIBA ─────────────────────────────────────────────
+window.addEventListener("scroll", function() {
+  var btn = document.getElementById("backTop");
+  if (!btn) return;
+  btn.classList[window.scrollY > 300 ? "add" : "remove"]("show");
+});
+
+// ── PANEL ADMIN ───────────────────────────────────────────────
+var ADMIN_PASS = "sharit-27";
+var CAT_KEY_MAP = {
+  Skincare:"sk", Maquillaje:"mq", Mascarillas:"ma", Cremas:"cr",
+  "Pesta\u00f1as":"pe", Perfumes:"pf", "U\u00f1as":"un", Cabello:"ca", Accesorios:"ac"
+};
+
+function openAdminLogin() {
+  document.getElementById("admOverlay").classList.add("open");
+  setTimeout(function() { document.getElementById("admPassInput").focus(); }, 100);
+}
+function closeAdminLogin() {
+  document.getElementById("admOverlay").classList.remove("open");
+  document.getElementById("admPassInput").value = "";
+  document.getElementById("admErr").style.display = "none";
+}
+function checkAdminPass() {
+  var val = document.getElementById("admPassInput").value;
+  if (val === ADMIN_PASS) { closeAdminLogin(); openAdminPanel(); }
+  else {
+    document.getElementById("admErr").style.display = "block";
+    document.getElementById("admPassInput").value = "";
+    document.getElementById("admPassInput").focus();
+  }
+}
+function openAdminPanel() {
+  document.getElementById("admPanel").classList.add("open");
+  showTab("resumen");
+}
+function closeAdminPanel() {
+  if (confirm("Cerrar el panel? Los cambios no guardados se perder\u00e1n.")) {
+    document.getElementById("admPanel").classList.remove("open");
+  }
+}
+function showTab(tab) {
+  ["resumen","stock","productos","agregar"].forEach(function(t) {
+    document.getElementById("adm-" + t).style.display = t === tab ? "block" : "none";
+    document.getElementById("tab-" + t).classList.toggle("on", t === tab);
+  });
+  if (tab === "resumen")   renderAdmResumen();
+  if (tab === "stock")     renderAdmStock();
+  if (tab === "productos") renderAdmProducts();
+}
+function showToast(msg, icon) {
+  var t = document.getElementById("admToast");
+  t.innerHTML = (icon || "\u2705") + " " + msg;
+  t.classList.add("show");
+  setTimeout(function() { t.classList.remove("show"); }, 2500);
+}
+function renderAdmResumen() {
+  var total   = PRODUCTS.length;
+  var ok      = PRODUCTS.filter(function(p) { return (p.stock||"ok") === "ok"; }).length;
+  var poco    = PRODUCTS.filter(function(p) { return p.stock === "poco"; }).length;
+  var agotado = PRODUCTS.filter(function(p) { return p.stock === "agotado"; }).length;
+  var ocultos = PRODUCTS.filter(function(p) { return p.hidden; }).length;
+
+  document.getElementById("admStats").innerHTML =
+    '<div class="adm-stat"><i class="ti ti-box"></i><div class="adm-stat-num">' + total + '</div><div class="adm-stat-lbl">Total productos</div></div>' +
+    '<div class="adm-stat"><i class="ti ti-circle-check" style="color:#10B981"></i><div class="adm-stat-num" style="color:#10B981">' + ok + '</div><div class="adm-stat-lbl">Disponibles</div></div>' +
+    '<div class="adm-stat"><i class="ti ti-alert-triangle" style="color:#F59E0B"></i><div class="adm-stat-num" style="color:#F59E0B">' + poco + '</div><div class="adm-stat-lbl">\u00daltimas unidades</div></div>' +
+    '<div class="adm-stat"><i class="ti ti-circle-x" style="color:#EF4444"></i><div class="adm-stat-num" style="color:#EF4444">' + agotado + '</div><div class="adm-stat-lbl">Agotados</div></div>' +
+    '<div class="adm-stat"><i class="ti ti-eye-off" style="color:#9CA3AF"></i><div class="adm-stat-num" style="color:#9CA3AF">' + ocultos + '</div><div class="adm-stat-lbl">Ocultos</div></div>';
+
+  var alerts = PRODUCTS.filter(function(p) { return p.stock === "agotado" || p.stock === "poco"; });
+  var alertsEl = document.getElementById("admAlerts");
+  if (alerts.length === 0) {
+    alertsEl.innerHTML = '<p style="font-size:13px;color:#10B981;text-align:center;padding:12px;">\u2705 Todo en orden.</p>';
+  } else {
+    alertsEl.innerHTML = alerts.map(function(p) {
+      return '<div class="adm-stock-item">' +
+        '<div class="adm-card-icon bg-' + p.key + '" style="width:36px;height:36px;font-size:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;">' +
+          '<i class="ti ' + p.icon + ' tx-' + p.key + '"></i></div>' +
+        '<span class="adm-stock-name">' + p.name + '</span>' +
+        '<span class="stock-chip ' + (p.stock==="agotado"?"stock-ago":"stock-poco") + '">' +
+          '<span class="stock-dot"></span>' + (p.stock==="agotado"?"Agotado":"\u00daltimas unidades") + '</span>' +
+      '</div>';
+    }).join("");
+  }
+}
+function renderAdmStock() {
+  document.getElementById("admStockList").innerHTML = PRODUCTS.map(function(p, idx) {
+    var color = (p.stock||"ok")==="agotado"?"#EF4444":(p.stock==="poco"?"#F59E0B":"#10B981");
+    return '<div class="adm-stock-item">' +
+      '<div class="adm-card-icon bg-' + p.key + '" style="width:36px;height:36px;font-size:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;">' +
+        '<i class="ti ' + p.icon + ' tx-' + p.key + '"></i></div>' +
+      '<span class="adm-stock-name">' + p.name + '<span style="font-size:11px;color:var(--text-mute);display:block;">' + p.cat + ' \u00b7 S/ ' + p.price + '</span></span>' +
+      '<select class="adm-stock-select" onchange="PRODUCTS[' + idx + '].stock=this.value;showToast(\'Stock actualizado\',\'\')" style="border-color:' + color + '">' +
+        '<option value="ok"'      + ((p.stock||"ok")==="ok"     ?' selected':'') + '>\u2705 Disponible</option>' +
+        '<option value="poco"'    + (p.stock==="poco"   ?' selected':'') + '>\u26a0\ufe0f \u00daltimas unidades</option>' +
+        '<option value="agotado"' + (p.stock==="agotado"?' selected':'') + '>\u274c Agotado</option>' +
+      '</select>' +
+    '</div>';
+  }).join("");
+}
+function renderAdmProducts() {
+  var q = (document.getElementById("admSearch")||{}).value || "";
+  var filtered = PRODUCTS.filter(function(p) {
+    return (p.name + p.cat + p.brand).toLowerCase().includes(q.toLowerCase());
+  });
+  document.getElementById("admProductList").innerHTML = filtered.map(function(p) {
+    var idx = PRODUCTS.indexOf(p);
+    return '<div class="adm-card" style="' + (p.hidden?"opacity:.5":"") + '">' +
+      '<div class="adm-card-top">' +
+        '<div class="adm-card-icon bg-' + p.key + '"><i class="ti ' + p.icon + ' tx-' + p.key + '"></i></div>' +
+        '<div class="adm-card-info"><p class="adm-card-name">' + p.name + '</p><p class="adm-card-cat">' + p.cat + ' \u00b7 ' + p.brand + '</p></div>' +
+        '<button class="adm-vis-btn' + (p.hidden?" hidden-prod":"") + '" onclick="toggleVisible(' + idx + ')">' +
+          '<i class="ti ' + (p.hidden?"ti-eye-off":"ti-eye") + '"></i> ' + (p.hidden?"Oculto":"Visible") + '</button>' +
+      '</div>' +
+      '<div class="adm-card-fields">' +
+        '<div class="adm-field"><label>Nombre</label>' +
+          '<input type="text" value="' + p.name + '" onchange="PRODUCTS[' + idx + '].name=this.value;this.classList.add(\'adm-changed\');showToast(\'Nombre actualizado\',\'\u270f\ufe0f\')"></div>' +
+        '<div class="adm-field"><label>Precio (S/)</label>' +
+          '<input type="number" value="' + p.price + '" step="0.50" min="0" onchange="PRODUCTS[' + idx + '].price=parseFloat(this.value)||0;this.classList.add(\'adm-changed\');showToast(\'Precio actualizado\',\'\')"></div>' +
+        '<div class="adm-field"><label>Stock</label>' +
+          '<select onchange="PRODUCTS[' + idx + '].stock=this.value;showToast(\'Stock actualizado\',\'\')">' +
+            '<option value="ok"'      + ((p.stock||"ok")==="ok"     ?' selected':'') + '>\u2705 Disponible</option>' +
+            '<option value="poco"'    + (p.stock==="poco"            ?' selected':'') + '>\u26a0\ufe0f \u00daltimas unidades</option>' +
+            '<option value="agotado"' + (p.stock==="agotado"         ?' selected':'') + '>\u274c Agotado</option>' +
+          '</select></div>' +
+        '<div class="adm-field adm-field-full"><label>Descripci\u00f3n</label>' +
+          '<input type="text" value="' + (p.desc||"") + '" onchange="PRODUCTS[' + idx + '].desc=this.value;this.classList.add(\'adm-changed\');showToast(\'Descripci\u00f3n actualizada\',\'\')"></div>' +
+        '<div class="adm-field adm-field-full"><label>Link de foto</label>' +
+          '<input type="text" value="' + (p.img||"") + '" placeholder="https://i.imgur.com/..." onchange="PRODUCTS[' + idx + '].img=this.value;this.classList.add(\'adm-changed\');showToast(\'Foto actualizada\',\'\ufe0f\')"></div>' +
+      '</div></div>';
+  }).join("");
+}
+function toggleVisible(idx) {
+  PRODUCTS[idx].hidden = !PRODUCTS[idx].hidden;
+  showToast(PRODUCTS[idx].hidden ? "Producto oculto" : "Producto visible", PRODUCTS[idx].hidden ? "" : "\ufe0f");
+  renderAdmProducts(); renderGrid();
+}
+function addNewProduct() {
+  var name  = document.getElementById("new-name").value.trim();
+  var cat   = document.getElementById("new-cat").value;
+  var brand = document.getElementById("new-brand").value.trim() || "Salyn Store";
+  var price = parseFloat(document.getElementById("new-price").value) || 0;
+  var stock = document.getElementById("new-stock").value;
+  var desc  = document.getElementById("new-desc").value.trim();
+  var img   = document.getElementById("new-img").value.trim();
+  if (!name)  { showToast("El nombre es obligatorio", "\u26a0\ufe0f"); return; }
+  if (!price) { showToast("El precio es obligatorio", "\u26a0\ufe0f"); return; }
+  var key   = CAT_KEY_MAP[cat] || "sk";
+  var icons = {sk:"ti-sparkles",mq:"ti-palette",ma:"ti-leaf",cr:"ti-hand-stop",pe:"ti-eye",pf:"ti-wind",un:"ti-star",ca:"ti-sparkles",ac:"ti-star"};
+  var newId = Math.max.apply(null, PRODUCTS.map(function(p) { return p.id; })) + 1;
+  PRODUCTS.push({ id:newId, name:name, cat:cat, key:key, brand:brand, price:price, icon:icons[key]||"ti-sparkles", img:img, desc:desc, stock:stock });
+  ["new-name","new-brand","new-price","new-desc","new-img"].forEach(function(id) {
+    document.getElementById(id).value = "";
+  });
+  showToast('"' + name + '" agregado', "");
+  renderGrid();
+}
+function saveChanges() {
+  renderGrid();
+  var prodsJS  = "const PRODUCTS = " + JSON.stringify(PRODUCTS, null, 2) + ";";
+  var htmlFull = document.documentElement.outerHTML;
+  var updated  = htmlFull.replace(/const PRODUCTS = \[[\s\S]*?\];/, prodsJS);
+  var blob = new Blob([updated], {type:"text/html;charset=utf-8"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "Salyn_Store_Catalogo.html";
+  a.click();
+  showToast("Archivo guardado en Descargas!", "");
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+renderPills();
+renderGrid();
+</script>
+
+
+<!-- ── CARRITO ─────────────────────────────────────── -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+
+<div class="cart-panel" id="cartPanel" role="dialog" aria-label="Carrito de compras">
+  <div class="cart-phdr">
+    <p class="cart-ptitle"><i class="ti ti-shopping-cart" aria-hidden="true"></i>Tu carrito</p>
+    <button class="cart-pclose" onclick="closeCart()" aria-label="Cerrar carrito">
+      <i class="ti ti-x" aria-hidden="true"></i>
+    </button>
+  </div>
+  <div class="cart-pbody" id="cartBody"></div>
+  <div class="cart-pfoot" id="cartFoot" style="display:none">
+    <p class="cart-count-line" id="cartCountLine"></p>
+    <div class="cart-total-row">
+      <span class="cart-total-lbl">Total</span>
+      <span class="cart-total-amt" id="cartTotalAmt">S/ 0.00</span>
+    </div>
+    <button class="cart-wa-btn" onclick="sendCartToWA()">
+      <i class="ti ti-brand-whatsapp" aria-hidden="true"></i>
+      Enviar pedido por WhatsApp
+    </button>
+    <button class="cart-clear-btn" onclick="clearCart()">Vaciar carrito</button>
+  </div>
+</div>
+
+<!-- Botón flotante -->
+<button class="float-cart" id="floatCart" onclick="openCart()" aria-label="Ver carrito">
+  <span style="font-size:20px">&#128722;</span>
+  <span class="float-badge" id="floatBadge">0</span>
+</button>
+
+
+<!-- ── VOLVER ARRIBA ────────────────────────────────── -->
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Volver arriba">
+  ↑
+</button>
+
+<!-- ── BOTÓN ADMIN (esquina inferior izquierda) ──────── -->
+<button class="admin-fab" onclick="openAdminLogin()" title="Panel de administración">
+  🔐
+</button>
+
+<!-- ── LOGIN ─────────────────────────────────────────── -->
+<div class="adm-overlay" id="admOverlay">
+  <div class="adm-login">
+    <i class="ti ti-shield-lock adm-login-icon"></i>
+    <h2>Panel de Salyn Store</h2>
+    <p>Ingresa tu contraseña para continuar</p>
+    <input type="password" id="admPassInput" placeholder="••••••••"
+           onkeydown="if(event.key==='Enter')checkAdminPass()">
+    <button class="adm-login-btn" onclick="checkAdminPass()">Entrar al panel</button>
+    <p class="adm-login-err" id="admErr">Contraseña incorrecta. Intenta de nuevo.</p>
+    <button class="adm-login-cancel" onclick="closeAdminLogin()">Cancelar</button>
+  </div>
+</div>
+
+<!-- ── PANEL PRINCIPAL ───────────────────────────────── -->
+<div class="adm-panel" id="admPanel">
+
+  <div class="adm-top">
+    <p class="adm-top-title">
+      <i class="ti ti-shield-check"></i> Panel Admin · Salyn Store
+    </p>
+    <div class="adm-top-right">
+      <button class="adm-save-btn" onclick="saveChanges()">
+        <i class="ti ti-download"></i> Guardar cambios
+      </button>
+      <button class="adm-close-btn" onclick="closeAdminPanel()">
+        <i class="ti ti-x"></i> Cerrar
+      </button>
+    </div>
+  </div>
+
+  <div class="adm-tabs">
+    <div class="adm-tab on" onclick="showTab('resumen')" id="tab-resumen">
+      <i class="ti ti-chart-bar"></i> Resumen
+    </div>
+    <div class="adm-tab" onclick="showTab('stock')" id="tab-stock">
+      <i class="ti ti-packages"></i> Stock rápido
+    </div>
+    <div class="adm-tab" onclick="showTab('productos')" id="tab-productos">
+      <i class="ti ti-list"></i> Productos
+    </div>
+    <div class="adm-tab" onclick="showTab('agregar')" id="tab-agregar">
+      <i class="ti ti-plus"></i> Agregar
+    </div>
+  </div>
+
+  <div class="adm-body">
+
+    <!-- TAB RESUMEN -->
+    <div id="adm-resumen">
+      <div class="adm-stats-grid" id="admStats"></div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;">
+        <p style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--br);">
+          <i class="ti ti-alert-triangle"></i> Productos que necesitan atención
+        </p>
+        <div id="admAlerts"></div>
+      </div>
+    </div>
+
+    <!-- TAB STOCK RÁPIDO -->
+    <div id="adm-stock" style="display:none">
+      <p style="font-size:13px;color:var(--text-mute);margin-bottom:12px;">
+        Cambia el stock de cualquier producto aquí. Los cambios se aplican al guardar.
+      </p>
+      <div id="admStockList"></div>
+    </div>
+
+    <!-- TAB PRODUCTOS -->
+    <div id="adm-productos" style="display:none">
+      <div class="adm-search">
+        <i class="ti ti-search"></i>
+        <input type="text" id="admSearch" placeholder="Buscar producto..." oninput="renderAdmProducts()">
+      </div>
+      <div id="admProductList"></div>
+    </div>
+
+    <!-- TAB AGREGAR -->
+    <div id="adm-agregar" style="display:none">
+      <div class="adm-add-form">
+        <h3><i class="ti ti-plus"></i> Nuevo producto</h3>
+        <div class="adm-add-grid">
+          <div class="adm-add-field adm-add-field-full">
+            <label>Nombre del producto *</label>
+            <input type="text" id="new-name" placeholder="Ej: Sérum Vitamina C">
+          </div>
+          <div class="adm-add-field">
+            <label>Categoría *</label>
+            <select id="new-cat">
+              <option value="Skincare">Skincare</option>
+              <option value="Maquillaje">Maquillaje</option>
+              <option value="Mascarillas">Mascarillas</option>
+              <option value="Cremas">Cremas</option>
+              <option value="Pestañas">Pestañas</option>
+              <option value="Perfumes">Perfumes</option>
+              <option value="Uñas">Uñas</option>
+              <option value="Cabello">Cabello</option>
+              <option value="Accesorios">Accesorios</option>
+            </select>
+          </div>
+          <div class="adm-add-field">
+            <label>Marca</label>
+            <input type="text" id="new-brand" placeholder="Ej: Bioaqua">
+          </div>
+          <div class="adm-add-field">
+            <label>Precio (S/) *</label>
+            <input type="number" id="new-price" placeholder="0.00" step="0.50" min="0">
+          </div>
+          <div class="adm-add-field">
+            <label>Stock inicial</label>
+            <select id="new-stock">
+              <option value="ok">✅ Disponible</option>
+              <option value="poco">⚠️ Últimas unidades</option>
+              <option value="agotado">❌ Agotado</option>
+            </select>
+          </div>
+          <div class="adm-add-field adm-add-field-full">
+            <label>Descripción</label>
+            <input type="text" id="new-desc" placeholder="Breve descripción del producto">
+          </div>
+          <div class="adm-add-field adm-add-field-full">
+            <label>Link de foto (opcional)</label>
+            <input type="text" id="new-img" placeholder="https://i.imgur.com/...">
+          </div>
+        </div>
+        <button class="adm-add-btn" onclick="addNewProduct()">
+          <i class="ti ti-plus"></i> Agregar al catálogo
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /adm-body -->
+</div><!-- /adm-panel -->
+
+<!-- Toast -->
+<div class="adm-toast" id="admToast"></div>
+
+
+<script>
+(function() {
+  var panel = document.getElementById("admPanel");
+  var overlay = document.getElementById("admOverlay");
+  if (panel) panel.classList.remove("open");
+  if (overlay) overlay.classList.remove("open");
+})();
+</script>
+</body>
+</html>
