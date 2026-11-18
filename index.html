@@ -583,6 +583,67 @@ body.dark .adm-login input { background:#1A1016; color:#F0E8ED; }
 .notify-btn:hover { background:#FEF08A; }
 .notify-btn i { font-size:15px; }
 
+
+/* ── FOTOS EXTRA Y OPCIONES ─────────────────────────── */
+.card-img{ cursor:pointer; }
+.photo-count{
+  position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,.55);
+  color:#fff; font-size:11px; font-weight:600; padding:3px 9px; border-radius:100px;
+}
+.card-opts{
+  font-size:11px; color:var(--text-gray); margin-bottom:8px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.pm-overlay{
+  position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:150;
+  display:none; align-items:center; justify-content:center; padding:16px;
+}
+.pm-overlay.open{ display:flex; }
+.pm-box{
+  background:var(--card-bg); border-radius:16px; width:100%; max-width:440px;
+  max-height:92vh; overflow-y:auto; position:relative;
+  box-shadow:0 12px 40px rgba(0,0,0,.25);
+}
+.pm-close{
+  position:absolute; top:10px; right:10px; z-index:3; width:34px; height:34px;
+  border-radius:50%; border:1.5px solid var(--br-soft); background:var(--br-pale);
+  color:var(--br); font-size:15px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.pm-main{
+  position:relative; height:300px; display:flex; align-items:center;
+  justify-content:center; overflow:hidden; border-radius:16px 16px 0 0;
+}
+.pm-main img{ width:100%; height:100%; object-fit:contain; background:#fff; display:block; }
+.pm-arrow{
+  position:absolute; top:50%; transform:translateY(-50%); width:36px; height:36px;
+  border-radius:50%; border:none; background:rgba(255,255,255,.85); color:var(--br);
+  font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.2);
+}
+.pm-prev{ left:10px; }
+.pm-next{ right:10px; }
+.pm-thumbs{ display:flex; gap:8px; overflow-x:auto; padding:10px 16px 0; }
+.pm-thumb{
+  width:56px; height:56px; object-fit:cover; border-radius:8px; flex-shrink:0;
+  border:2px solid var(--border); cursor:pointer; background:#fff;
+}
+.pm-thumb.on{ border-color:var(--br); }
+.pm-body{ padding:14px 18px 20px; }
+.pm-name{ font-size:17px; font-weight:700; color:var(--text-dark); margin-bottom:2px; }
+.pm-brand{ font-size:12px; color:var(--text-mute); margin-bottom:8px; }
+.pm-desc{ font-size:13px; color:var(--text-gray); line-height:1.5; margin-bottom:10px; }
+.pm-price{ font-size:22px; font-weight:700; color:var(--br); margin-bottom:12px; }
+.pm-opt-label{ font-size:12px; font-weight:700; color:var(--text-dark); margin-bottom:8px; }
+.pm-opts{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+.pm-opt{
+  padding:8px 14px; border-radius:100px; font-size:13px; cursor:pointer;
+  border:1px solid var(--border); background:var(--card-bg); color:var(--text-gray);
+}
+.pm-opt:hover{ border-color:var(--br-soft); color:var(--text-dark); }
+.pm-opt.on{ border:2px solid var(--br); color:var(--br); font-weight:700; background:var(--br-pale); }
+.pm-warn{ display:none; font-size:12px; color:#ef4444; margin-bottom:8px; }
+
 </style>
 </head>
 <body>
@@ -1446,12 +1507,19 @@ function renderGrid() {
     var heartIcon = isWished ? "&#9829;" : "&#9825;";
     var imgHtml, tagHtml, actionBtn;
 
-    if (p.img) {
-      imgHtml = '<img src="' + p.img + '" alt="' + p.name + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">' +
+    var photos = getPhotos(p);
+    if (photos.length) {
+      imgHtml = '<img src="' + photos[0] + '" alt="' + p.name + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">' +
                 '<i class="ti ' + p.icon + ' tx-' + p.key + '" style="display:none;position:absolute;"></i>';
     } else {
       imgHtml = '<i class="ti ' + p.icon + ' tx-' + p.key + '"></i>';
     }
+    if (photos.length > 1) {
+      imgHtml += '<span class="photo-count">1 / ' + photos.length + '</span>';
+    }
+    var optsLine = hasOptions(p)
+      ? '<p class="card-opts">' + esc(p.optLabel ? p.optLabel + ': ' : '') + esc(p.options.join(', ')) + '</p>'
+      : '';
 
     tagHtml = p.tag
       ? '<span class="tag"><i class="ti ' + p.tagIcon + '"></i> ' + p.tag + '</span>'
@@ -1460,18 +1528,22 @@ function renderGrid() {
     if (isAgotado) {
       actionBtn = '<button class="notify-btn" onclick="notifyMe(' + p.id + ')">' +
                   '<i class="ti ti-bell"></i> Av\u00edsame cuando llegue</button>';
+    } else if (hasOptions(p)) {
+      actionBtn = '<button class="add-cart-btn" id="btn-' + p.id + '" onclick="openProduct(' + p.id + ')">' +
+                  '<span style="font-size:14px">&#9998;</span> Elegir opci\u00f3n</button>';
     } else {
       actionBtn = '<button class="add-cart-btn" id="btn-' + p.id + '" onclick="addToCartById(' + p.id + ')">' +
                   '<span style="font-size:14px">&#43;</span> Agregar al carrito</button>';
     }
 
     return '<div class="card' + (isAgotado ? ' agotada' : '') + '">' +
-      '<div class="card-img bg-' + p.key + '">' + imgHtml + tagHtml + '</div>' +
+      '<div class="card-img bg-' + p.key + '" onclick="openProduct(' + p.id + ')">' + imgHtml + tagHtml + '</div>' +
       '<div class="card-body">' +
         '<p class="cat-label">' + p.cat + '</p>' +
-        '<p class="prod-name">'  + p.name + '</p>' +
+        '<p class="prod-name" style="cursor:pointer" onclick="openProduct(' + p.id + ')">' + p.name + '</p>' +
         '<p class="prod-brand">' + p.brand + '</p>' +
         '<p class="prod-desc">'  + p.desc + '</p>' +
+        optsLine +
         stockChip(p.stock || "ok") +
         '<div class="price-row">' +
           '<span class="price">S/ ' + p.price + '</span>' +
@@ -1528,25 +1600,29 @@ function notifyMe(id) {
 // ── CARRITO ───────────────────────────────────────────────────
 var cart = [];
 
+function addCartItem(p, opt) {
+  var existing = cart.find(function(x) { return x.id === p.id && x.opt === opt; });
+  if (existing) { existing.qty++; }
+  else { cart.push({ id:p.id, name:p.name, price:p.price, icon:p.icon, key:p.key, img:(getPhotos(p)[0] || ""), opt:opt, qty:1 }); }
+  updateBadge();
+}
 function addToCartById(id) {
   var p = PRODUCTS.find(function(x) { return x.id === id; });
   if (!p || p.stock === "agotado") return;
-  var existing = cart.find(function(x) { return x.id === id; });
-  if (existing) { existing.qty++; }
-  else { cart.push({ id:p.id, name:p.name, price:p.price, icon:p.icon, key:p.key, qty:1 }); }
-  updateBadge();
+  if (hasOptions(p)) { openProduct(id); return; }
+  addCartItem(p, "");
   showFeedback(id);
 }
-function removeFromCart(id) {
-  cart = cart.filter(function(x) { return x.id !== id; });
+function removeFromCart(i) {
+  cart.splice(i, 1);
   updateBadge();
   renderCartBody();
 }
-function updateQty(id, delta) {
-  var item = cart.find(function(x) { return x.id === id; });
+function updateQty(i, delta) {
+  var item = cart[i];
   if (!item) return;
   item.qty += delta;
-  if (item.qty <= 0) { removeFromCart(id); return; }
+  if (item.qty <= 0) { removeFromCart(i); return; }
   updateBadge();
   renderCartBody();
 }
@@ -1592,22 +1668,27 @@ function renderCartBody() {
   cline.textContent = n + (n === 1 ? " producto" : " productos") + " en tu pedido";
   total.textContent = "S/ " + getTotal().toFixed(2);
 
-  body.innerHTML = cart.map(function(item) {
+  body.innerHTML = cart.map(function(item, i) {
+    var pic = item.img
+      ? '<img src="' + item.img + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" onerror="this.style.display=\'none\'">'
+      : '<i class="ti ' + item.icon + ' tx-' + item.key + '"></i>';
+    var optLine = item.opt
+      ? '<p class="cart-pitem-unit" style="color:var(--br);font-weight:600;">' + esc(item.opt) + '</p>'
+      : '';
     return '<div class="cart-pitem">' +
-      '<div class="cart-pitem-img bg-' + item.key + '">' +
-        '<i class="ti ' + item.icon + ' tx-' + item.key + '"></i>' +
-      '</div>' +
+      '<div class="cart-pitem-img bg-' + item.key + '">' + pic + '</div>' +
       '<div class="cart-pitem-info">' +
         '<p class="cart-pitem-name">' + item.name + '</p>' +
+        optLine +
         '<p class="cart-pitem-unit">S/ ' + item.price.toFixed(2) + ' c/u</p>' +
         '<div class="cart-qty-row">' +
-          '<button class="qty-btn" onclick="updateQty(' + item.id + ',-1)">\u2212</button>' +
+          '<button class="qty-btn" onclick="updateQty(' + i + ',-1)">\u2212</button>' +
           '<span class="qty-num">' + item.qty + '</span>' +
-          '<button class="qty-btn" onclick="updateQty(' + item.id + ',1)">+</button>' +
+          '<button class="qty-btn" onclick="updateQty(' + i + ',1)">+</button>' +
         '</div>' +
       '</div>' +
       '<div class="cart-pitem-right">' +
-        '<button class="cart-remove" onclick="removeFromCart(' + item.id + ')"><i class="ti ti-x"></i></button>' +
+        '<button class="cart-remove" onclick="removeFromCart(' + i + ')"><i class="ti ti-x"></i></button>' +
         '<span class="cart-pitem-sub">S/ ' + (item.price * item.qty).toFixed(2) + '</span>' +
       '</div>' +
     '</div>';
@@ -1627,7 +1708,7 @@ function sendCartToWA() {
   if (cart.length === 0) return;
   var msg = "Hola Salyn Store! Quiero hacer un pedido:\n\n";
   cart.forEach(function(i) {
-    msg += "- " + i.qty + "x " + i.name + " - S/ " + (i.price * i.qty).toFixed(2) + "\n";
+    msg += "- " + i.qty + "x " + i.name + (i.opt ? " (" + i.opt + ")" : "") + " - S/ " + (i.price * i.qty).toFixed(2) + "\n";
   });
   msg += "\nTotal: S/ " + getTotal().toFixed(2);
   msg += "\n\nMe confirmas disponibilidad?";
@@ -1795,6 +1876,12 @@ function renderAdmProducts() {
           '<input type="text" value="' + (p.desc||"") + '" onchange="PRODUCTS[' + idx + '].desc=this.value;this.classList.add(\'adm-changed\');showToast(\'Descripci\u00f3n actualizada\',\'\')"></div>' +
         '<div class="adm-field adm-field-full"><label>Link de foto</label>' +
           '<input type="text" value="' + (p.img||"") + '" placeholder="https://i.imgur.com/..." onchange="PRODUCTS[' + idx + '].img=this.value;this.classList.add(\'adm-changed\');showToast(\'Foto actualizada\',\'\ufe0f\')"></div>' +
+        '<div class="adm-field adm-field-full"><label>Fotos extra (un link por l\u00ednea)</label>' +
+          '<textarea rows="3" style="width:100%;padding:7px 10px;border-radius:7px;border:1px solid var(--border);font-size:12px;outline:none;font-family:inherit;" placeholder="https://..." onchange="setExtraPhotos(' + idx + ',this.value)">' + esc((p.imgs || []).join("\n")) + '</textarea></div>' +
+        '<div class="adm-field"><label>Nombre de la opci\u00f3n</label>' +
+          '<input type="text" value="' + esc(p.optLabel || "") + '" placeholder="Sabor, Tono..." onchange="PRODUCTS[' + idx + '].optLabel=this.value;showToast(\'Opci\u00f3n actualizada\',\'\u2705\')"></div>' +
+        '<div class="adm-field" style="grid-column:span 2"><label>Opciones (separadas por coma)</label>' +
+          '<input type="text" value="' + esc((p.options || []).join(", ")) + '" placeholder="Manzanilla, Fresa" onchange="setOptions(' + idx + ',this.value)"></div>' +
       '</div></div>';
   }).join("");
 }
@@ -1824,6 +1911,8 @@ function addNewProduct() {
   renderGrid();
 }
 function saveChanges() {
+  closeCart();
+  closeProduct();
   renderGrid();
   var prodsJS  = "const PRODUCTS = " + JSON.stringify(PRODUCTS, null, 2) + ";";
   var htmlFull = document.documentElement.outerHTML;
@@ -1834,6 +1923,130 @@ function saveChanges() {
   a.download = "Salyn_Store_Catalogo.html";
   a.click();
   showToast("Archivo guardado en Descargas!", "");
+}
+
+
+// ── FOTOS EXTRA Y OPCIONES ────────────────────────────────────
+function esc(s) {
+  return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function getPhotos(p) {
+  var list = [];
+  if (p.img) list.push(p.img);
+  if (p.imgs && p.imgs.length) {
+    p.imgs.forEach(function(u) { if (u) list.push(u); });
+  }
+  return list;
+}
+function hasOptions(p) { return !!(p.options && p.options.length); }
+
+var pmId = null, pmPhoto = 0, pmOpt = -1;
+
+function findProd(id) {
+  return PRODUCTS.find(function(x) { return x.id === id; });
+}
+function openProduct(id) {
+  if (!findProd(id)) return;
+  pmId = id; pmPhoto = 0; pmOpt = -1;
+  renderProduct();
+  document.getElementById("pmOverlay").classList.add("open");
+}
+function closeProduct() {
+  var ov = document.getElementById("pmOverlay");
+  if (ov) ov.classList.remove("open");
+  var c = document.getElementById("pmContent");
+  if (c) c.innerHTML = "";
+  pmId = null;
+}
+function setPhoto(i) { pmPhoto = i; renderProduct(); }
+function stepPhoto(d) {
+  var p = findProd(pmId);
+  if (!p) return;
+  var n = getPhotos(p).length;
+  if (n < 2) return;
+  pmPhoto = (pmPhoto + d + n) % n;
+  renderProduct();
+}
+function pickOption(i) { pmOpt = i; renderProduct(); }
+
+function renderProduct() {
+  var p = findProd(pmId);
+  if (!p) return;
+  var photos = getPhotos(p);
+  var isAgotado = p.stock === "agotado";
+  var main, arrows = "", thumbs = "", opts = "", action;
+
+  if (photos.length) {
+    main = '<img src="' + esc(photos[pmPhoto]) + '" alt="' + esc(p.name) + '" onerror="this.style.display=\'none\'">';
+  } else {
+    main = '<i class="ti ' + p.icon + ' tx-' + p.key + '" style="font-size:72px"></i>';
+  }
+  if (photos.length > 1) {
+    arrows = '<button class="pm-arrow pm-prev" onclick="stepPhoto(-1)" aria-label="Foto anterior">&#10094;</button>' +
+             '<button class="pm-arrow pm-next" onclick="stepPhoto(1)" aria-label="Foto siguiente">&#10095;</button>' +
+             '<span class="photo-count">' + (pmPhoto + 1) + ' / ' + photos.length + '</span>';
+    thumbs = '<div class="pm-thumbs">' + photos.map(function(u, i) {
+      return '<img class="pm-thumb' + (i === pmPhoto ? ' on' : '') + '" src="' + esc(u) + '" alt="" onclick="setPhoto(' + i + ')">';
+    }).join("") + '</div>';
+  }
+  if (hasOptions(p) && !isAgotado) {
+    opts = '<p class="pm-opt-label">' + esc(p.optLabel || "Elige una opción") + '</p><div class="pm-opts">' +
+      p.options.map(function(o, i) {
+        return '<button class="pm-opt' + (i === pmOpt ? ' on' : '') + '" onclick="pickOption(' + i + ')">' + esc(o) + '</button>';
+      }).join("") + '</div><p class="pm-warn" id="pmWarn">Elige una opción para continuar</p>';
+  }
+  if (isAgotado) {
+    action = '<button class="notify-btn" onclick="notifyMe(' + p.id + ')"><i class="ti ti-bell"></i> Avísame cuando llegue</button>';
+  } else {
+    action = '<button class="add-cart-btn" onclick="addFromModal()"><span style="font-size:14px">&#43;</span> Agregar al carrito</button>';
+  }
+
+  document.getElementById("pmContent").innerHTML =
+    '<div class="pm-main bg-' + p.key + '">' + main + arrows + '</div>' + thumbs +
+    '<div class="pm-body">' +
+      '<p class="cat-label">' + esc(p.cat) + '</p>' +
+      '<p class="pm-name">' + esc(p.name) + '</p>' +
+      '<p class="pm-brand">' + esc(p.brand) + '</p>' +
+      '<p class="pm-desc">' + esc(p.desc) + '</p>' +
+      stockChip(p.stock || "ok") +
+      '<p class="pm-price">S/ ' + p.price + '</p>' +
+      opts + action +
+    '</div>';
+}
+
+function addFromModal() {
+  var p = findProd(pmId);
+  if (!p || p.stock === "agotado") return;
+  var opt = "";
+  if (hasOptions(p)) {
+    if (pmOpt < 0) {
+      var w = document.getElementById("pmWarn");
+      if (w) w.style.display = "block";
+      return;
+    }
+    opt = p.options[pmOpt];
+  }
+  addCartItem(p, opt);
+  closeProduct();
+  showToast("Agregado al carrito", "\u2705");
+}
+
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") closeProduct();
+});
+
+// ── Panel admin: fotos extra y opciones ──
+function setExtraPhotos(idx, val) {
+  var arr = val.split("\n").map(function(s) { return s.trim(); }).filter(function(s) { return s; });
+  if (arr.length) PRODUCTS[idx].imgs = arr; else delete PRODUCTS[idx].imgs;
+  showToast("Fotos actualizadas", "\u2705");
+  renderGrid();
+}
+function setOptions(idx, val) {
+  var arr = val.split(",").map(function(s) { return s.trim(); }).filter(function(s) { return s; });
+  if (arr.length) PRODUCTS[idx].options = arr; else delete PRODUCTS[idx].options;
+  showToast("Opciones actualizadas", "\u2705");
+  renderGrid();
 }
 
 // ── INIT ──────────────────────────────────────────────────────
@@ -2017,6 +2230,14 @@ renderGrid();
   </div><!-- /adm-body -->
 </div><!-- /adm-panel -->
 
+<!-- ── DETALLE DE PRODUCTO (fotos y opciones) ────────── -->
+<div class="pm-overlay" id="pmOverlay" onclick="if(event.target===this)closeProduct()">
+  <div class="pm-box" role="dialog" aria-label="Detalle del producto">
+    <button class="pm-close" onclick="closeProduct()" aria-label="Cerrar">&#10005;</button>
+    <div id="pmContent"></div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="adm-toast" id="admToast"></div>
 
@@ -2027,6 +2248,8 @@ renderGrid();
   var overlay = document.getElementById("admOverlay");
   if (panel) panel.classList.remove("open");
   if (overlay) overlay.classList.remove("open");
+  var pm = document.getElementById("pmOverlay");
+  if (pm) pm.classList.remove("open");
 })();
 </script>
 </body>
