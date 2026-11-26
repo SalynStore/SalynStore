@@ -644,9 +644,12 @@ body.dark .adm-login input { background:#1A1016; color:#F0E8ED; }
 .pm-opt.on{ border:2px solid var(--br); color:var(--br); font-weight:700; background:var(--br-pale); }
 .pm-warn{ display:none; font-size:12px; color:#ef4444; margin-bottom:8px; }
 
+body.en-vivo .admin-fab{display:none!important}
+#avisoBar{display:none;background:#FFF3C4;color:#5b4300;text-align:center;padding:9px 14px;font-size:14px;font-weight:600}
 </style>
 </head>
 <body>
+<div id="avisoBar"></div>
 
 <header class="header">
   <div class="header-top">
@@ -709,12 +712,12 @@ body.dark .adm-login input { background:#1A1016; color:#F0E8ED; }
 /* ============================================================
    6. TU NÚMERO DE WHATSAPP
    ============================================================ */
-const WHATSAPP_NUMBER = "51977975478";
+let WHATSAPP_NUMBER = "51977975478";
 
 /* ============================================================
    7. TUS PRODUCTOS
    ============================================================ */
-const PRODUCTS = [
+let PRODUCTS = [
   {
     "id": 1,
     "name": "Parches contra granitos Dra. la Rosa",
@@ -1423,7 +1426,7 @@ const PRODUCTS = [
 /* ============================================================
    8. LÓGICA DEL CATÁLOGO
    ============================================================ */
-const CATEGORIES = ["Todos", ...new Set(PRODUCTS.map(p => p.cat))];
+let CATEGORIES = ["Todos", ...new Set(PRODUCTS.map(p => p.cat))];
 let activeCat   = "Todos";
 let searchQuery = "";
 let wishlist    = new Set();
@@ -2049,7 +2052,37 @@ function setOptions(idx, val) {
   renderGrid();
 }
 
+/* ============================================================
+   CATÁLOGO EN VIVO: los productos vienen del panel de Salyn.
+   Si no hay internet o aún no se publicó, se usan los de siempre.
+   ============================================================ */
+var CAT_URL = "https://firestore.googleapis.com/v1/projects/salyn-pos/databases/(default)/documents/catalog/main?key=AIzaSyB376TG_n1ldzPf0j-9PMLu2nitp4x1-cM";
+function applyCatalog(d) {
+  if (!d || !d.products || !d.products.length) return false;
+  PRODUCTS = d.products;
+  if (d.wa) WHATSAPP_NUMBER = d.wa;
+  CATEGORIES = ["Todos"].concat(Array.from(new Set(PRODUCTS.map(function (p) { return p.cat; }))));
+  if (CATEGORIES.indexOf(activeCat) < 0) activeCat = "Todos";
+  var ab = document.getElementById("avisoBar");
+  if (ab) { ab.textContent = d.aviso || ""; ab.style.display = d.aviso ? "block" : "none"; }
+  document.body.classList.add("en-vivo");
+  return true;
+}
+function loadLive() {
+  try { var c = localStorage.getItem("salynCatalogo"); if (c) applyCatalog(JSON.parse(c)); } catch (e) {}
+  fetch(CAT_URL).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+    if (!j || !j.fields || !j.fields.json) return;
+    var txt = j.fields.json.stringValue, d = JSON.parse(txt);
+    if (applyCatalog(d)) {
+      try { localStorage.setItem("salynCatalogo", txt); } catch (e) {}
+      renderPills(); renderGrid();
+      if (typeof renderCartBody === "function") { try { renderCartBody(); } catch (e) {} }
+    }
+  }).catch(function () {});
+}
+
 // ── INIT ──────────────────────────────────────────────────────
+loadLive();
 renderPills();
 renderGrid();
 </script>
